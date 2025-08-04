@@ -1,0 +1,1590 @@
+{
+  "denemeler": [
+    {
+      "id": 1754074641772,
+      "ad": "yetki 1 ( tekrar )",
+      "detaylar": [
+        {
+          "ders": "Anayasa Hukuku",
+          "dogru": 0,
+          "yanlis": 6,
+          "yanlislar": []
+        },
+        {
+          "ders": "Anayasa Yargısı",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "İdare Hukuku",
+          "dogru": 0,
+          "yanlis": 6,
+          "yanlislar": []
+        },
+        {
+          "ders": "İdari Yargılama Usulü",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Medeni Hukuk",
+          "dogru": 9,
+          "yanlis": 6,
+          "yanlislar": [
+            {
+              "soruNo": "21",
+              "konu": "hısımlık"
+            },
+            {
+              "soruNo": "22",
+              "konu": "ehliyetler"
+            },
+            {
+              "soruNo": "23",
+              "konu": "ehliyetler"
+            },
+            {
+              "soruNo": "29",
+              "konu": "irtifak hakları"
+            },
+            {
+              "soruNo": "31",
+              "konu": "kısıtlılık"
+            },
+            {
+              "soruNo": "33",
+              "konu": "edinilmiş mallar"
+            }
+          ]
+        },
+        {
+          "ders": "Borçlar Hukuku",
+          "dogru": 0,
+          "yanlis": 12,
+          "yanlislar": []
+        },
+        {
+          "ders": "Ticaret Hukuku",
+          "dogru": 8,
+          "yanlis": 4,
+          "yanlislar": [
+            {
+              "soruNo": "46",
+              "konu": "ticaret şirketi devri"
+            },
+            {
+              "soruNo": "48",
+              "konu": "şube özellikleri"
+            },
+            {
+              "soruNo": "57",
+              "konu": "kıymetli evrak türleri"
+            },
+            {
+              "soruNo": "55",
+              "konu": "cari hesap"
+            }
+          ]
+        },
+        {
+          "ders": "Hukuk Yargılama Usulü",
+          "dogru": 8,
+          "yanlis": 4,
+          "yanlislar": [
+            {
+              "soruNo": "58",
+              "konu": "basit yargılama türleri"
+            },
+            {
+              "soruNo": "64",
+              "konu": "disiplin hapsi"
+            },
+            {
+              "soruNo": "66",
+              "konu": "çekişmesiz yargı işleri"
+            },
+            {
+              "soruNo": "68",
+              "konu": "dava süresi"
+            }
+          ]
+        },
+        {
+          "ders": "İcra ve İflas Hukuku",
+          "dogru": 4,
+          "yanlis": 2,
+          "yanlislar": [
+            {
+              "soruNo": "71",
+              "konu": "tazminat sorumluluğu"
+            },
+            {
+              "soruNo": "73",
+              "konu": "iflas idaresi özellikleri"
+            }
+          ]
+        },
+        {
+          "ders": "Ceza Hukuku",
+          "dogru": 8,
+          "yanlis": 1,
+          "yanlislar": [
+            {
+              "soruNo": "79",
+              "konu": "yabancı ülkede işlenen suçlar"
+            }
+          ]
+        },
+        {
+          "ders": "Ceza Yargılama Usulü",
+          "dogru": 4,
+          "yanlis": 2,
+          "yanlislar": [
+            {
+              "soruNo": "86",
+              "konu": "af ve meşru savunma sonrası verilecek karar"
+            },
+            {
+              "soruNo": "89",
+              "konu": "basit yargılama usülleri"
+            }
+          ]
+        },
+        {
+          "ders": "İş Hukuku",
+          "dogru": 4,
+          "yanlis": 2,
+          "yanlislar": [
+            {
+              "soruNo": "92",
+              "konu": "toplu işçi sona ermesi"
+            },
+            {
+              "soruNo": "96",
+              "konu": "sgk isteğe bağlı sigortalılık"
+            }
+          ]
+        },
+        {
+          "ders": "Vergi Hukuku",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Vergi Usul Hukuku",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Avukatlık Hukuku",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Hukuk Felsefesi ve Sosyolojisi",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Türk Hukuk Tarihi",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Milletlerarası Hukuk",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Milletlerarası Özel Hukuku",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Genel Kamu Hukuku",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        }
+      ],
+      "note": "tekrar denemesiydi"
+    },
+    {
+      "id": 1754200799302,
+      "ad": "yetki 2(tekrar)",
+      "detaylar": [
+        {
+          "ders": "Anayasa Hukuku",
+          "dogru": 0,
+          "yanlis": 6,
+          "yanlislar": []
+        },
+        {
+          "ders": "Anayasa Yargısı",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "İdare Hukuku",
+          "dogru": 0,
+          "yanlis": 6,
+          "yanlislar": []
+        },
+        {
+          "ders": "İdari Yargılama Usulü",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Medeni Hukuk",
+          "dogru": 9,
+          "yanlis": 6,
+          "yanlislar": [
+            {
+              "soruNo": "19",
+              "konu": "mutlak haklar"
+            },
+            {
+              "soruNo": "21",
+              "konu": "çocuğun soyadı"
+            },
+            {
+              "soruNo": "24",
+              "konu": "terk sebebiyle boşanma"
+            },
+            {
+              "soruNo": "25",
+              "konu": "atanmış mirasçı"
+            },
+            {
+              "soruNo": "30",
+              "konu": "bütünleyici parça / eklenti"
+            },
+            {
+              "soruNo": "32",
+              "konu": "mirasçılıktan çıkarma"
+            }
+          ]
+        },
+        {
+          "ders": "Borçlar Hukuku",
+          "dogru": 0,
+          "yanlis": 12,
+          "yanlislar": []
+        },
+        {
+          "ders": "Ticaret Hukuku",
+          "dogru": 7,
+          "yanlis": 5,
+          "yanlislar": [
+            {
+              "soruNo": "46",
+              "konu": "ticari işletmenin devri"
+            },
+            {
+              "soruNo": "47",
+              "konu": "marka"
+            },
+            {
+              "soruNo": "48",
+              "konu": "ticaret ünvanı"
+            },
+            {
+              "soruNo": "51",
+              "konu": "şirketlerin bölünmesi"
+            },
+            {
+              "soruNo": "54",
+              "konu": "kıymetli evrak ziyaı"
+            }
+          ]
+        },
+        {
+          "ders": "Hukuk Yargılama Usulü",
+          "dogru": 9,
+          "yanlis": 3,
+          "yanlislar": [
+            {
+              "soruNo": "62",
+              "konu": "dava ehliyetleri"
+            },
+            {
+              "soruNo": "63",
+              "konu": "medeni usul ilkeleri"
+            },
+            {
+              "soruNo": "64",
+              "konu": "sulh hukuk mahkemesi görevleri"
+            }
+          ]
+        },
+        {
+          "ders": "İcra ve İflas Hukuku",
+          "dogru": 4,
+          "yanlis": 2,
+          "yanlislar": [
+            {
+              "soruNo": "72",
+              "konu": "şikayet"
+            },
+            {
+              "soruNo": "73",
+              "konu": "birinci alacaklılar toplantısı"
+            }
+          ]
+        },
+        {
+          "ders": "Ceza Hukuku",
+          "dogru": 6,
+          "yanlis": 3,
+          "yanlislar": [
+            {
+              "soruNo": "77",
+              "konu": "mülkilik ilkesi"
+            },
+            {
+              "soruNo": "83",
+              "konu": "kamu görevlisi suçları"
+            },
+            {
+              "soruNo": "84",
+              "konu": "zincirleme suç hükümleri"
+            }
+          ]
+        },
+        {
+          "ders": "Ceza Yargılama Usulü",
+          "dogru": 6,
+          "yanlis": 0,
+          "yanlislar": []
+        },
+        {
+          "ders": "İş Hukuku",
+          "dogru": 3,
+          "yanlis": 3,
+          "yanlislar": [
+            {
+              "soruNo": "91",
+              "konu": "eşit davranma ilkesi"
+            },
+            {
+              "soruNo": "92",
+              "konu": "iş yerinin devri"
+            },
+            {
+              "soruNo": "96",
+              "konu": "sgk malullük oranı"
+            }
+          ]
+        },
+        {
+          "ders": "Vergi Hukuku",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Vergi Usul Hukuku",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Avukatlık Hukuku",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Hukuk Felsefesi ve Sosyolojisi",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Türk Hukuk Tarihi",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Milletlerarası Hukuk",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Milletlerarası Özel Hukuku",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Genel Kamu Hukuku",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        }
+      ],
+      "note": ""
+    },
+    {
+      "id": 1754256007705,
+      "ad": "yetki 3 Tekrar",
+      "detaylar": [
+        {
+          "ders": "Anayasa Hukuku",
+          "dogru": 5,
+          "yanlis": 1,
+          "yanlislar": [
+            {
+              "soruNo": "6",
+              "konu": "hakimlerin idari görevleri yönünden bağlılığı"
+            }
+          ]
+        },
+        {
+          "ders": "Anayasa Yargısı",
+          "dogru": 1,
+          "yanlis": 2,
+          "yanlislar": [
+            {
+              "soruNo": "7",
+              "konu": "feragat sonucu aym kararı"
+            },
+            {
+              "soruNo": "9",
+              "konu": "yüce divan yargılama süresi"
+            }
+          ]
+        },
+        {
+          "ders": "İdare Hukuku",
+          "dogru": 0,
+          "yanlis": 6,
+          "yanlislar": []
+        },
+        {
+          "ders": "İdari Yargılama Usulü",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Medeni Hukuk",
+          "dogru": 6,
+          "yanlis": 9,
+          "yanlislar": [
+            {
+              "soruNo": "19",
+              "konu": "ispat yükü"
+            },
+            {
+              "soruNo": "20",
+              "konu": "mirasçılıktan çıkarma"
+            },
+            {
+              "soruNo": "21",
+              "konu": "cinsiyet değiştirme"
+            },
+            {
+              "soruNo": "22",
+              "konu": "dernekler"
+            },
+            {
+              "soruNo": "26",
+              "konu": "mirasçılıkta resmi defter"
+            },
+            {
+              "soruNo": "29",
+              "konu": "kanundan doğan paylı mülkiyet"
+            },
+            {
+              "soruNo": "31",
+              "konu": "irtifak hakları"
+            },
+            {
+              "soruNo": "32",
+              "konu": "ehliyetler"
+            },
+            {
+              "soruNo": "33",
+              "konu": "irtifak hakları"
+            }
+          ]
+        },
+        {
+          "ders": "Borçlar Hukuku",
+          "dogru": 0,
+          "yanlis": 12,
+          "yanlislar": []
+        },
+        {
+          "ders": "Ticaret Hukuku",
+          "dogru": 10,
+          "yanlis": 2,
+          "yanlislar": [
+            {
+              "soruNo": "48",
+              "konu": "tacir yardımcıları zamanaşımı"
+            },
+            {
+              "soruNo": "50",
+              "konu": "kolektif şirket"
+            }
+          ]
+        },
+        {
+          "ders": "Hukuk Yargılama Usulü",
+          "dogru": 7,
+          "yanlis": 5,
+          "yanlislar": [
+            {
+              "soruNo": "60",
+              "konu": "dava şartları"
+            },
+            {
+              "soruNo": "61",
+              "konu": "görevi gereği sır saklaması gereken kişi hakkında alınacak izin yeri"
+            },
+            {
+              "soruNo": "65",
+              "konu": "davanın açılmasıyla resen ihbar"
+            },
+            {
+              "soruNo": "66",
+              "konu": "senetle ispat zorunluluğu"
+            },
+            {
+              "soruNo": "67",
+              "konu": "geçici hukuki korumalar"
+            }
+          ]
+        },
+        {
+          "ders": "İcra ve İflas Hukuku",
+          "dogru": 4,
+          "yanlis": 2,
+          "yanlislar": [
+            {
+              "soruNo": "73",
+              "konu": "iflas dışı konkordato"
+            },
+            {
+              "soruNo": "75",
+              "konu": "uzlaşma yoluyla yeniden yapılandırma talebi"
+            }
+          ]
+        },
+        {
+          "ders": "Ceza Hukuku",
+          "dogru": 5,
+          "yanlis": 4,
+          "yanlislar": [
+            {
+              "soruNo": "78",
+              "konu": "hukuki nitelikler"
+            },
+            {
+              "soruNo": "79",
+              "konu": "hukuki nitelikler"
+            },
+            {
+              "soruNo": "80",
+              "konu": "iştirak"
+            },
+            {
+              "soruNo": "81",
+              "konu": "kasten öldürme"
+            }
+          ]
+        },
+        {
+          "ders": "Ceza Yargılama Usulü",
+          "dogru": 5,
+          "yanlis": 1,
+          "yanlislar": [
+            {
+              "soruNo": "87",
+              "konu": "hüküm sayılan haller"
+            }
+          ]
+        },
+        {
+          "ders": "İş Hukuku",
+          "dogru": 3,
+          "yanlis": 3,
+          "yanlislar": [
+            {
+              "soruNo": "91",
+              "konu": "takım sözleşmesi"
+            },
+            {
+              "soruNo": "95",
+              "konu": "sgk"
+            },
+            {
+              "soruNo": "96",
+              "konu": "sgk vazife malüllüğü"
+            }
+          ]
+        },
+        {
+          "ders": "Vergi Hukuku",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Vergi Usul Hukuku",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Avukatlık Hukuku",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Hukuk Felsefesi ve Sosyolojisi",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Türk Hukuk Tarihi",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Milletlerarası Hukuk",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Milletlerarası Özel Hukuku",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Genel Kamu Hukuku",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        }
+      ],
+      "note": ""
+    },
+    {
+      "id": 1754333526774,
+      "ad": "yetki 4 tekrar",
+      "detaylar": [
+        {
+          "ders": "Anayasa Hukuku",
+          "dogru": 6,
+          "yanlis": 0,
+          "yanlislar": []
+        },
+        {
+          "ders": "Anayasa Yargısı",
+          "dogru": 3,
+          "yanlis": 0,
+          "yanlislar": []
+        },
+        {
+          "ders": "İdare Hukuku",
+          "dogru": 0,
+          "yanlis": 6,
+          "yanlislar": []
+        },
+        {
+          "ders": "İdari Yargılama Usulü",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Medeni Hukuk",
+          "dogru": 10,
+          "yanlis": 5,
+          "yanlislar": [
+            {
+              "soruNo": "19",
+              "konu": "yenilik doğuran haklar"
+            },
+            {
+              "soruNo": "23",
+              "konu": "boşanma sebepleri"
+            },
+            {
+              "soruNo": "24",
+              "konu": "edinilmiş mallar"
+            },
+            {
+              "soruNo": "27",
+              "konu": "miras sözleşmesi"
+            },
+            {
+              "soruNo": "30",
+              "konu": "irtifak hakları"
+            }
+          ]
+        },
+        {
+          "ders": "Borçlar Hukuku",
+          "dogru": 0,
+          "yanlis": 12,
+          "yanlislar": []
+        },
+        {
+          "ders": "Ticaret Hukuku",
+          "dogru": 5,
+          "yanlis": 7,
+          "yanlislar": [
+            {
+              "soruNo": "46",
+              "konu": "ticari işlerde faiz"
+            },
+            {
+              "soruNo": "48",
+              "konu": "acentelik sözleşmesi"
+            },
+            {
+              "soruNo": "57",
+              "konu": "ticaret şirketi devri"
+            },
+            {
+              "soruNo": "50",
+              "konu": "anonim şirket genel kurulu toplantıya çağırabilecek kişiler"
+            },
+            {
+              "soruNo": "53",
+              "konu": "ciro"
+            },
+            {
+              "soruNo": "54",
+              "konu": "protestodan muafiyet"
+            },
+            {
+              "soruNo": "55",
+              "konu": "bono"
+            }
+          ]
+        },
+        {
+          "ders": "Hukuk Yargılama Usulü",
+          "dogru": 9,
+          "yanlis": 3,
+          "yanlislar": [
+            {
+              "soruNo": "62",
+              "konu": "hakimin reddi"
+            },
+            {
+              "soruNo": "66",
+              "konu": "idari yargılamaya kıyasen uygulanabilecek hükümler"
+            },
+            {
+              "soruNo": "67",
+              "konu": "ön sorunlar"
+            }
+          ]
+        },
+        {
+          "ders": "İcra ve İflas Hukuku",
+          "dogru": 4,
+          "yanlis": 2,
+          "yanlislar": [
+            {
+              "soruNo": "71",
+              "konu": ""
+            },
+            {
+              "soruNo": "72",
+              "konu": "ipoteğin paraya çevrilmesi yolu"
+            }
+          ]
+        },
+        {
+          "ders": "Ceza Hukuku",
+          "dogru": 5,
+          "yanlis": 4,
+          "yanlislar": [
+            {
+              "soruNo": "77",
+              "konu": "cezanın ertelenmesi"
+            },
+            {
+              "soruNo": "78",
+              "konu": "kamu davasını düşüren şeyler"
+            },
+            {
+              "soruNo": "79",
+              "konu": "dava zamanaşımı"
+            },
+            {
+              "soruNo": "82",
+              "konu": "etkin pişmanlık hükümleri"
+            }
+          ]
+        },
+        {
+          "ders": "Ceza Yargılama Usulü",
+          "dogru": 5,
+          "yanlis": 1,
+          "yanlislar": [
+            {
+              "soruNo": "88",
+              "konu": "disiplin hapsi"
+            }
+          ]
+        },
+        {
+          "ders": "İş Hukuku",
+          "dogru": 4,
+          "yanlis": 2,
+          "yanlislar": [
+            {
+              "soruNo": "95",
+              "konu": "sgk"
+            },
+            {
+              "soruNo": "96",
+              "konu": "işsizlik sigortası"
+            }
+          ]
+        },
+        {
+          "ders": "Vergi Hukuku",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Vergi Usul Hukuku",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Avukatlık Hukuku",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Hukuk Felsefesi ve Sosyolojisi",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Türk Hukuk Tarihi",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Milletlerarası Hukuk",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Milletlerarası Özel Hukuku",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        },
+        {
+          "ders": "Genel Kamu Hukuku",
+          "dogru": 0,
+          "yanlis": 3,
+          "yanlislar": []
+        }
+      ],
+      "note": ""
+    }
+  ],
+  "yanlisTakipData": {
+    "1754074641772": {
+      "ad": "yetki 1 ( tekrar )",
+      "dersler": {
+        "Medeni Hukuk": [
+          {
+            "soruNo": "21",
+            "konu": "hısımlık",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "22",
+            "konu": "ehliyetler",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "23",
+            "konu": "ehliyetler",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "29",
+            "konu": "irtifak hakları",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "31",
+            "konu": "kısıtlılık",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "33",
+            "konu": "edinilmiş mallar",
+            "cozuldu": true
+          }
+        ],
+        "Ticaret Hukuku": [
+          {
+            "soruNo": "46",
+            "konu": "ticaret şirketi devri",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "48",
+            "konu": "şube özellikleri",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "57",
+            "konu": "kıymetli evrak türleri",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "55",
+            "konu": "cari hesap",
+            "cozuldu": false
+          }
+        ],
+        "Hukuk Yargılama Usulü": [
+          {
+            "soruNo": "58",
+            "konu": "basit yargılama türleri",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "64",
+            "konu": "disiplin hapsi",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "66",
+            "konu": "çekişmesiz yargı işleri",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "68",
+            "konu": "dava süresi",
+            "cozuldu": false
+          }
+        ],
+        "İcra ve İflas Hukuku": [
+          {
+            "soruNo": "71",
+            "konu": "tazminat sorumluluğu",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "73",
+            "konu": "iflas idaresi özellikleri",
+            "cozuldu": false
+          }
+        ],
+        "Ceza Hukuku": [
+          {
+            "soruNo": "79",
+            "konu": "yabancı ülkede işlenen suçlar",
+            "cozuldu": false
+          }
+        ],
+        "Ceza Yargılama Usulü": [
+          {
+            "soruNo": "86",
+            "konu": "af ve meşru savunma sonrası verilecek karar",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "89",
+            "konu": "basit yargılama usülleri",
+            "cozuldu": false
+          }
+        ],
+        "İş Hukuku": [
+          {
+            "soruNo": "92",
+            "konu": "toplu işçi sona ermesi",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "96",
+            "konu": "sgk isteğe bağlı sigortalılık",
+            "cozuldu": false
+          }
+        ]
+      }
+    },
+    "1754200799302": {
+      "ad": "yetki 2(tekrar)",
+      "dersler": {
+        "Medeni Hukuk": [
+          {
+            "soruNo": "19",
+            "konu": "mutlak haklar",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "21",
+            "konu": "çocuğun soyadı",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "24",
+            "konu": "terk sebebiyle boşanma",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "25",
+            "konu": "atanmış mirasçı",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "30",
+            "konu": "bütünleyici parça / eklenti",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "32",
+            "konu": "mirasçılıktan çıkarma",
+            "cozuldu": false
+          }
+        ],
+        "Ticaret Hukuku": [
+          {
+            "soruNo": "46",
+            "konu": "ticari işletmenin devri",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "47",
+            "konu": "marka",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "48",
+            "konu": "ticaret ünvanı",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "51",
+            "konu": "şirketlerin bölünmesi",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "54",
+            "konu": "kıymetli evrak ziyaı",
+            "cozuldu": false
+          }
+        ],
+        "Hukuk Yargılama Usulü": [
+          {
+            "soruNo": "62",
+            "konu": "dava ehliyetleri",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "63",
+            "konu": "medeni usul ilkeleri",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "64",
+            "konu": "sulh hukuk mahkemesi görevleri",
+            "cozuldu": false
+          }
+        ],
+        "İcra ve İflas Hukuku": [
+          {
+            "soruNo": "72",
+            "konu": "şikayet",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "73",
+            "konu": "birinci alacaklılar toplantısı",
+            "cozuldu": false
+          }
+        ],
+        "Ceza Hukuku": [
+          {
+            "soruNo": "77",
+            "konu": "mülkilik ilkesi",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "83",
+            "konu": "kamu görevlisi suçları",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "84",
+            "konu": "zincirleme suç hükümleri",
+            "cozuldu": false
+          }
+        ],
+        "İş Hukuku": [
+          {
+            "soruNo": "91",
+            "konu": "eşit davranma ilkesi",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "92",
+            "konu": "iş yerinin devri",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "96",
+            "konu": "sgk malullük oranı",
+            "cozuldu": false
+          }
+        ]
+      }
+    },
+    "1754256007705": {
+      "ad": "yetki 3 Tekrar",
+      "dersler": {
+        "Anayasa Hukuku": [
+          {
+            "soruNo": "6",
+            "konu": "hakimlerin idari görevleri yönünden bağlılığı",
+            "cozuldu": false
+          }
+        ],
+        "Anayasa Yargısı": [
+          {
+            "soruNo": "7",
+            "konu": "feragat sonucu aym kararı",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "9",
+            "konu": "yüce divan yargılama süresi",
+            "cozuldu": false
+          }
+        ],
+        "Medeni Hukuk": [
+          {
+            "soruNo": "19",
+            "konu": "ispat yükü",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "20",
+            "konu": "mirasçılıktan çıkarma",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "21",
+            "konu": "cinsiyet değiştirme",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "22",
+            "konu": "dernekler",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "26",
+            "konu": "mirasçılıkta resmi defter",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "29",
+            "konu": "kanundan doğan paylı mülkiyet",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "31",
+            "konu": "irtifak hakları",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "32",
+            "konu": "ehliyetler",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "33",
+            "konu": "irtifak hakları",
+            "cozuldu": false
+          }
+        ],
+        "Ticaret Hukuku": [
+          {
+            "soruNo": "48",
+            "konu": "tacir yardımcıları zamanaşımı",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "50",
+            "konu": "kolektif şirket",
+            "cozuldu": false
+          }
+        ],
+        "Hukuk Yargılama Usulü": [
+          {
+            "soruNo": "60",
+            "konu": "dava şartları",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "61",
+            "konu": "görevi gereği sır saklaması gereken kişi hakkında alınacak izin yeri",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "65",
+            "konu": "davanın açılmasıyla resen ihbar",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "66",
+            "konu": "senetle ispat zorunluluğu",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "67",
+            "konu": "geçici hukuki korumalar",
+            "cozuldu": false
+          }
+        ],
+        "İcra ve İflas Hukuku": [
+          {
+            "soruNo": "73",
+            "konu": "iflas dışı konkordato",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "75",
+            "konu": "uzlaşma yoluyla yeniden yapılandırma talebi",
+            "cozuldu": false
+          }
+        ],
+        "Ceza Hukuku": [
+          {
+            "soruNo": "78",
+            "konu": "hukuki nitelikler",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "79",
+            "konu": "hukuki nitelikler",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "80",
+            "konu": "iştirak",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "81",
+            "konu": "kasten öldürme",
+            "cozuldu": false
+          }
+        ],
+        "Ceza Yargılama Usulü": [
+          {
+            "soruNo": "87",
+            "konu": "hüküm sayılan haller",
+            "cozuldu": false
+          }
+        ],
+        "İş Hukuku": [
+          {
+            "soruNo": "91",
+            "konu": "takım sözleşmesi",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "95",
+            "konu": "sgk",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "96",
+            "konu": "sgk vazife malüllüğü",
+            "cozuldu": false
+          }
+        ]
+      }
+    },
+    "1754333526774": {
+      "ad": "yetki 4 tekrar",
+      "dersler": {
+        "Medeni Hukuk": [
+          {
+            "soruNo": "19",
+            "konu": "yenilik doğuran haklar",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "23",
+            "konu": "boşanma sebepleri",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "24",
+            "konu": "edinilmiş mallar",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "27",
+            "konu": "miras sözleşmesi",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "30",
+            "konu": "irtifak hakları",
+            "cozuldu": false
+          }
+        ],
+        "Ticaret Hukuku": [
+          {
+            "soruNo": "46",
+            "konu": "ticari işlerde faiz",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "48",
+            "konu": "acentelik sözleşmesi",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "57",
+            "konu": "ticaret şirketi devri",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "50",
+            "konu": "anonim şirket genel kurulu toplantıya çağırabilecek kişiler",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "53",
+            "konu": "ciro",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "54",
+            "konu": "protestodan muafiyet",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "55",
+            "konu": "bono",
+            "cozuldu": false
+          }
+        ],
+        "Hukuk Yargılama Usulü": [
+          {
+            "soruNo": "62",
+            "konu": "hakimin reddi",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "66",
+            "konu": "idari yargılamaya kıyasen uygulanabilecek hükümler",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "67",
+            "konu": "ön sorunlar",
+            "cozuldu": false
+          }
+        ],
+        "İcra ve İflas Hukuku": [
+          {
+            "soruNo": "71",
+            "konu": "",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "72",
+            "konu": "ipoteğin paraya çevrilmesi yolu",
+            "cozuldu": false
+          }
+        ],
+        "Ceza Hukuku": [
+          {
+            "soruNo": "77",
+            "konu": "cezanın ertelenmesi",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "78",
+            "konu": "kamu davasını düşüren şeyler",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "79",
+            "konu": "dava zamanaşımı",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "82",
+            "konu": "etkin pişmanlık hükümleri",
+            "cozuldu": false
+          }
+        ],
+        "Ceza Yargılama Usulü": [
+          {
+            "soruNo": "88",
+            "konu": "disiplin hapsi",
+            "cozuldu": false
+          }
+        ],
+        "İş Hukuku": [
+          {
+            "soruNo": "95",
+            "konu": "sgk",
+            "cozuldu": false
+          },
+          {
+            "soruNo": "96",
+            "konu": "işsizlik sigortası",
+            "cozuldu": false
+          }
+        ]
+      }
+    }
+  },
+  "dersKonulari": {
+    "Medeni Hukuk": [
+      "hısımlık",
+      "ehliyetler",
+      "irtifak hakları",
+      "kısıtlılık",
+      "edinilmiş mallar",
+      "mutlak haklar",
+      "çocuğun soyadı",
+      "terk sebebiyle boşanma",
+      "atanmış mirasçı",
+      "bütünleyici parça / eklenti",
+      "mirasçılıktan çıkarma",
+      "ispat yükü",
+      "cinsiyet değiştirme",
+      "dernekler",
+      "mirasçılıkta resmi defter",
+      "kanundan doğan paylı mülkiyet",
+      "yenilik doğuran haklar",
+      "boşanma sebepleri",
+      "miras sözleşmesi"
+    ],
+    "Ticaret Hukuku": [
+      "ticaret şirketi devri",
+      "şube özellikleri",
+      "kıymetli evrak türleri",
+      "cari hesap",
+      "ticari işletmenin devri",
+      "marka",
+      "ticaret ünvanı",
+      "şirketlerin bölünmesi",
+      "kıymetli evrak ziyaı",
+      "tacir yardımcıları zamanaşımı",
+      "kolektif şirket",
+      "ticari işlerde faiz",
+      "acentelik sözleşmesi",
+      "anonim şirket genel kurulu toplantıya çağırabilecek kişiler",
+      "ciro",
+      "protestodan muafiyet",
+      "bono"
+    ],
+    "Hukuk Yargılama Usulü": [
+      "basit yargılama türleri",
+      "disiplin hapsi",
+      "çekişmesiz yargı işleri",
+      "dava süresi",
+      "dava ehliyetleri",
+      "medeni usul ilkeleri",
+      "sulh hukuk mahkemesi görevleri",
+      "dava şartları",
+      "görevi gereği sır saklaması gereken kişi hakkında alınacak izin yeri",
+      "davanın açılmasıyla resen ihbar",
+      "senetle ispat zorunluluğu",
+      "geçici hukuki korumalar",
+      "hakimin reddi",
+      "idari yargılamaya kıyasen uygulanabilecek hükümler",
+      "ön sorunlar"
+    ],
+    "İcra ve İflas Hukuku": [
+      "tazminat sorumluluğu",
+      "iflas idaresi özellikleri",
+      "şikayet",
+      "birinci alacaklılar toplantısı",
+      "iflas dışı konkordato",
+      "uzlaşma yoluyla yeniden yapılandırma talebi",
+      "ipoteğin paraya çevrilmesi yolu"
+    ],
+    "Ceza Hukuku": [
+      "yabancı ülkede işlenen suçlar",
+      "mülkilik ilkesi",
+      "kamu görevlisi suçları",
+      "zincirleme suç hükümleri",
+      "hukuki nitelikler",
+      "iştirak",
+      "kasten öldürme",
+      "cezanın ertelenmesi",
+      "kamu davasını düşüren şeyler",
+      "dava zamanaşımı",
+      "etkin pişmanlık hükümleri"
+    ],
+    "Ceza Yargılama Usulü": [
+      "af ve meşru savunma sonrası verilecek karar",
+      "basit yargılama usülleri",
+      "hüküm sayılan haller",
+      "disiplin hapsi"
+    ],
+    "İş Hukuku": [
+      "toplu işçi sona ermesi",
+      "sgk isteğe bağlı sigortalılık",
+      "eşit davranma ilkesi",
+      "iş yerinin devri",
+      "sgk malullük oranı",
+      "takım sözleşmesi",
+      "sgk",
+      "sgk vazife malüllüğü",
+      "işsizlik sigortası"
+    ],
+    "Anayasa Hukuku": [
+      "hakimlerin idari görevleri yönünden bağlılığı"
+    ],
+    "Anayasa Yargısı": [
+      "feragat sonucu aym kararı",
+      "yüce divan yargılama süresi"
+    ]
+  }
+}
