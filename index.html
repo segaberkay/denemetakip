@@ -926,6 +926,10 @@
         <div class="modal-content">
             <button class="close-btn" onclick="app.closeDersAnalizModal()">×</button>
             <h3>Ders Analizi</h3>
+            <div id="dersAnalizFilterBar" class="filter-bar" style="margin-bottom: 1rem;">
+                <button class="secondary active" onclick="app.filterDersAnalizi(false, this)">Tüm Denemeler</button>
+                <button class="secondary" onclick="app.filterDersAnalizi(true, this)">Son 5 Deneme</button>
+            </div>
             <ul id="dersListForAnalysis"></ul>
             <div id="dersDetayAnalizContent"></div>
         </div>
@@ -1543,6 +1547,7 @@
                 clearAllViews();
                 elements.dersAnalizModal.style.display = "flex";
                 renderDersListForAnalysis();
+                filterDersAnalizi(false, document.querySelector('#dersAnalizFilterBar button:first-child'));
             };
             const closeDersAnalizModal = () => {
                 elements.dersAnalizModal.style.display = "none";
@@ -1554,13 +1559,89 @@
                     const li = document.createElement("li");
                     li.textContent = ders;
                     li.onclick = () => {
-                        renderDersDetayAnaliz(ders);
+                        const lastFive = document.querySelector('#dersAnalizFilterBar button:nth-child(2)').classList.contains('active');
+                        
+                        // --- YENİ EKLENEN KONTROL ---
+                        // Eğer tıklanan ders zaten aktif olan derse, genel analize geri dön.
+                        if (ders === aktifDersAnaliz) {
+                            renderGenelDersAnalizi(lastFive);
+                        } 
+                        // Değilse, o dersin detayını göster (eski davranış).
+                        else { 
+                            renderDersDetayAnaliz(ders, lastFive);
+                        }
+                        // --- DEĞİŞİKLİK SONU ---
                     };
                     elements.dersListForAnalysis.appendChild(li);
                 });
-                if(aktifDersAnaliz) renderDersDetayAnaliz(aktifDersAnaliz);
+                if(aktifDersAnaliz) {
+                     const lastFive = document.querySelector('#dersAnalizFilterBar button:nth-child(2)').classList.contains('active');
+                     renderDersDetayAnaliz(aktifDersAnaliz, lastFive);
+                }
             };
-            const renderDersDetayAnaliz = (dersAdi) => {
+            
+            const renderGenelDersAnalizi = (lastFive = false) => {
+                aktifDersAnaliz = null; // Aktif ders seçimini temizle
+                document.querySelectorAll('#dersListForAnalysis li').forEach(li => li.classList.remove('active'));
+
+                let denemelerSource = [...denemeler].sort((a, b) => new Date(a.tarih) - new Date(b.tarih));
+                if (lastFive) {
+                    denemelerSource = denemelerSource.slice(-5);
+                }
+
+                if (denemelerSource.length === 0) {
+                    elements.dersDetayAnalizContent.innerHTML = "<div class='uyari-mesaji'>Analiz için deneme verisi bulunamadı.</div>";
+                    return;
+                }
+
+                const dersYanlisSayilari = {};
+                dersler.forEach(ders => {
+                    dersYanlisSayilari[ders] = 0;
+                });
+
+                denemelerSource.forEach(deneme => {
+                    deneme.detaylar.forEach(detay => {
+                        dersYanlisSayilari[detay.ders] += detay.yanlis;
+                    });
+                });
+
+                const siraliDersler = Object.entries(dersYanlisSayilari)
+                    .filter(([, yanlisSayisi]) => yanlisSayisi > 0)
+                    .sort(([, a], [, b]) => b - a);
+
+                let html = `<h4>En Çok Yanlış Yapılan Dersler (${lastFive ? 'Son 5 Deneme' : 'Tüm Denemeler'})</h4>`;
+
+                if (siraliDersler.length === 0) {
+                    html += "<div class='uyari-mesaji'>Tebrikler! Bu periyotta yanlışınız bulunan bir ders yok.</div>";
+                } else {
+                    html += `<ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">`;
+                    siraliDersler.forEach(([ders, sayi]) => {
+                        html += `
+                            <li class="yanlis-item" style="flex-direction: row; justify-content: space-between; align-items: center; padding: 0.8rem 1rem;">
+                                <strong>${ders}</strong> 
+                                <span style="color: var(--danger-btn-bg); font-weight: 600;">(${sayi} yanlış)</span>
+                            </li>`;
+                    });
+                    html += `</ul>`;
+                }
+                elements.dersDetayAnalizContent.innerHTML = html;
+            };
+
+            const filterDersAnalizi = (lastFive, buttonEl) => {
+                if (buttonEl) {
+                    const parent = buttonEl.parentElement;
+                    parent.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                    buttonEl.classList.add('active');
+                }
+
+                if (aktifDersAnaliz) {
+                    renderDersDetayAnaliz(aktifDersAnaliz, lastFive);
+                } else {
+                    renderGenelDersAnalizi(lastFive);
+                }
+            };
+
+            const renderDersDetayAnaliz = (dersAdi, lastFive = false) => {
                 aktifDersAnaliz = dersAdi;
                 document.querySelectorAll('#dersListForAnalysis li').forEach(li => {
                     li.classList.remove('active');
@@ -1573,20 +1654,27 @@
                 if (window.singleDersChartInstance) {
                     window.singleDersChartInstance.destroy();
                 }
-                if (denemeler.length === 0) {
+                
+                let denemelerSource = [...denemeler].sort((a, b) => new Date(a.tarih) - new Date(b.tarih));
+                if (lastFive) {
+                    denemelerSource = denemelerSource.slice(-5);
+                }
+
+                if (denemelerSource.length === 0) {
                     elements.dersDetayAnalizContent.innerHTML = "<p>Deneme verisi bulunamadı.</p>";
                     return;
                 }
-                const denemeAdlari = denemeler.map(d => d.ad);
-                const dogruVerileri = denemeler.map(d => {
+
+                const denemeAdlari = denemelerSource.map(d => d.ad);
+                const dogruVerileri = denemelerSource.map(d => {
                     const detay = d.detaylar.find(det => det.ders === dersAdi);
                     return detay ? detay.dogru : 0;
                 });
-                const yanlisVerileri = denemeler.map(d => {
+                const yanlisVerileri = denemelerSource.map(d => {
                     const detay = d.detaylar.find(det => det.ders === dersAdi);
                     return detay ? detay.yanlis : 0;
                 });
-                const bosVerileri = denemeler.map(d => {
+                const bosVerileri = denemelerSource.map(d => {
                     const detay = d.detaylar.find(det => det.ders === dersAdi);
                     return detay ? soruSayilari[dersAdi] - detay.dogru - detay.yanlis : soruSayilari[dersAdi];
                 });
@@ -1598,15 +1686,9 @@
                 const chartData = {
                     labels: denemeAdlari,
                     datasets: [
-                        {
-                            label: 'Doğru', data: dogruVerileri, backgroundColor: '#27ae60', stack: 'Stack 0'
-                        },
-                        {
-                            label: 'Yanlış', data: yanlisVerileri, backgroundColor: '#e74c3c', stack: 'Stack 0'
-                        },
-                        {
-                            label: 'Boş', data: bosVerileri, backgroundColor: '#95a5a6', stack: 'Stack 0'
-                        }
+                        { label: 'Doğru', data: dogruVerileri, backgroundColor: '#27ae60', stack: 'Stack 0' },
+                        { label: 'Yanlış', data: yanlisVerileri, backgroundColor: '#e74c3c', stack: 'Stack 0' },
+                        { label: 'Boş', data: bosVerileri, backgroundColor: '#95a5a6', stack: 'Stack 0' }
                     ]
                 };
 
@@ -1614,13 +1696,19 @@
                     type: 'bar',
                     data: chartData,
                     options: {
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `${dersAdi} Dersi Analizi (${lastFive ? 'Son 5 Deneme' : 'Tüm Denemeler'})`
+                            }
+                        },
                         responsive: true, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } }
                     }
                 };
                 window.singleDersChartInstance = new Chart(chartCanvas.getContext('2d'), chartConfig);
 
                 const enCokYanlisKonular = {};
-                denemeler.forEach(deneme => {
+                denemelerSource.forEach(deneme => {
                     const detay = deneme.detaylar.find(d => d.ders === dersAdi);
                     if (detay && detay.yanlislar) {
                         detay.yanlislar.forEach(yanlis => {
@@ -2240,7 +2328,7 @@
                 updateYanlis, renderDersDetayAnaliz, compareSelectedDenemeler,
                 openYanlisTakipModal, closeYanlisTakipModal, renderYanlisTakipDenemeList,
                 showYanlisTakipSoruList, toggleYanlisTakipSoruStatus, switchYanlisTakipView,
-                showYanlisDenemeListesi, showDenemeYanlislari,
+                showYanlisDenemeListesi, showDenemeYanlislari, filterDersAnalizi,
                 openStopwatch, closeStopwatch, startStopwatch, resetStopwatch, saveStopwatchTime,
                 deleteSavedTime, renderSavedTimes, toggleFullscreen, toggleTheme,
                 init
