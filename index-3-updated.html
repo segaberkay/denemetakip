@@ -1,0 +1,2340 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Deneme Takip Aracı - Yeni Tasarım</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* GENEL TASARIM */
+        :root {
+            --bg-color: #f4f7f9;
+            --text-color: #333;
+            --container-bg: #ffffff;
+            --shadow-light: rgba(0, 0, 0, 0.08);
+            --header-color: #2c3e50;
+            --primary-btn-bg: #3498db;
+            --primary-btn-text: white;
+            --secondary-btn-bg: #e7ebee;
+            --secondary-btn-text: #555;
+            --danger-btn-bg: #e74c3c;
+            --danger-btn-text: white;
+            --table-header-bg: #34495e;
+            --table-row-bg: #f9fbfd;
+            --modal-bg: #ffffff;
+            --modal-shadow: rgba(0, 0, 0, 0.15);
+            --yanlis-blink-color: rgba(231, 76, 60, 0.9);
+            --success-bg: #e9f5ee;
+            --success-border: #27ae60;
+            --warning-bg: #fff8e1;
+            --warning-border: #ffb300;
+            --warning-text: #664f00;
+        }
+
+        .dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --container-bg: #1e1e1e;
+            --shadow-light: rgba(0, 0, 0, 0.5);
+            --header-color: #bb86fc;
+            --primary-btn-bg: #bb86fc;
+            --primary-btn-text: #1e1e1e;
+            --secondary-btn-bg: #333;
+            --secondary-btn-text: #e0e0e0;
+            --danger-btn-bg: #e74c3c;
+            --danger-btn-text: white;
+            --table-header-bg: #2c2c2c;
+            --table-row-bg: #222222;
+            --modal-bg: #1e1e1e;
+            --modal-shadow: rgba(0, 0, 0, 0.5);
+            --yanlis-blink-color: rgba(231, 76, 60, 0.9);
+            --success-bg: #222d26;
+            --success-border: #27ae60;
+            --warning-bg: #36322b;
+            --warning-border: #ffb300;
+            --warning-text: #e0c279;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* LAYOUT */
+        #mainContainer, #stopwatchContainer {
+            width: 100%;
+            max-width: 1100px;
+            background-color: var(--container-bg);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px var(--shadow-light);
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        #stopwatchContainer {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            width: 90%;
+            max-width: 800px;
+            height: auto;
+            min-height: 500px;
+            z-index: 999;
+            padding: 3rem;
+            box-sizing: border-box;
+        }
+        #stopwatchContainer.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            max-width: 100vw;
+            max-height: 100vh;
+            border-radius: 0;
+            transform: none;
+        }
+        #stopwatchContainer.focus-mode #backToHomeButton,
+        #stopwatchContainer.focus-mode #savedTimesContainer,
+        #stopwatchContainer.focus-mode h4 {
+            display: none !important;
+        }
+        #stopwatchContainer.focus-mode #stopwatchDisplay {
+            font-size: 10rem;
+        }
+        #stopwatchContainer.focus-mode #stopwatchButtons {
+            position: absolute;
+            bottom: 5vh;
+        }
+
+
+        h1, h2, h3, h4 {
+            color: var(--header-color);
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.2;
+            transition: color 0.3s;
+        }
+        h1 { font-size: 2.5rem; }
+        h2 { font-size: 2rem; }
+        h3 { font-size: 1.5rem; }
+        #yanlisTakipKonuOzetContainer h4 {
+            margin-top: 1.2rem;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+            border-bottom: 2px solid var(--primary-btn-bg);
+            padding-bottom: 0.3rem;
+        }
+
+
+        /* BUTONLAR */
+        #buttonBar, #dataActionsBar, #stopwatchButtons, .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+        button {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px var(--shadow-light);
+        }
+        button.primary {
+            background-color: var(--primary-btn-bg);
+            color: var(--primary-btn-text);
+        }
+        button.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+        button.secondary {
+            background-color: var(--secondary-btn-bg);
+            color: var(--secondary-btn-text);
+        }
+        button.secondary:hover {
+            background-color: #d8dee2;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+        .dark-mode button.secondary:hover {
+            background-color: #444;
+        }
+        button.danger {
+            background-color: var(--danger-btn-bg);
+            color: var(--danger-btn-text);
+        }
+        button.danger:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+        .yanlis-button-blink {
+            animation: blink-red 1.5s infinite;
+        }
+        @keyframes blink-red {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+            50% { box-shadow: 0 0 10px 5px var(--yanlis-blink-color); }
+        }
+        .back-btn {
+            background-color: var(--secondary-btn-bg);
+            color: var(--secondary-btn-text);
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 1rem;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .dark-mode .back-btn {
+            background-color: #444;
+            color: #e0e0e0;
+        }
+        .filter-bar button.active {
+            background-color: var(--primary-btn-bg);
+            color: var(--primary-btn-text);
+            transform: translateY(-2px);
+        }
+
+        
+        /* Kronometre Sayfası */
+        #stopwatchDisplay {
+            font-size: 6rem;
+            font-weight: 700;
+            color: var(--header-color);
+            margin-bottom: 2rem;
+            transition: color 0.3s, font-size 0.3s;
+        }
+        .dark-mode #stopwatchDisplay {
+            color: var(--header-color);
+        }
+        #stopwatchButtons button {
+            font-size: 1.2rem;
+            padding: 1rem 2rem;
+        }
+        #fullscreenButton {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            font-size: 1.5rem;
+            padding: 0.5rem 1rem;
+        }
+        #backToHomeButton {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+        }
+        #savedTimesContainer {
+            width: 100%;
+            max-width: 600px;
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: var(--container-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            max-height: 300px;
+            overflow-y: auto;
+            transition: background-color 0.3s;
+        }
+        .dark-mode #savedTimesContainer {
+            background-color: #2c2c2c;
+        }
+        #savedTimesList {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        #savedTimesList li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #eee;
+            transition: border-color 0.3s;
+        }
+        .dark-mode #savedTimesList li {
+            border-bottom: 1px solid #444;
+        }
+        #savedTimesList li:last-child {
+            border-bottom: none;
+        }
+        #savedTimesList li .danger {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+        }
+        
+        /* DENEME LİSTESİ */
+        #denemeListesi {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .deneme-list-item {
+            background: var(--container-bg);
+            border-left: 5px solid #3498db;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .dark-mode .deneme-list-item {
+            background: #2c2c2c;
+        }
+        .deneme-list-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .deneme-link-container {
+            flex-grow: 1;
+        }
+        .deneme-link {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            text-decoration: none;
+            display: block;
+            transition: color 0.3s;
+        }
+        .deneme-tarih {
+            font-size: 0.85rem;
+            color: #777;
+            margin-top: 4px;
+        }
+        .dark-mode .deneme-tarih {
+            color: #aaa;
+        }
+        .deneme-summary {
+            font-size: 0.9rem;
+            color: #777;
+            transition: color 0.3s;
+            white-space: nowrap;
+            margin: 0 1rem;
+        }
+        .dark-mode .deneme-summary {
+            color: #ccc;
+        }
+        .deneme-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .deneme-actions button {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* TABLO */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--container-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-top: 1.5rem;
+            transition: background-color 0.3s;
+        }
+        th, td {
+            border-bottom: 1px solid #eef1f4;
+            padding: 1rem;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        .dark-mode th, .dark-mode td {
+            border-bottom-color: #444;
+        }
+        th {
+            background-color: var(--table-header-bg);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:nth-child(even) {
+            background-color: var(--table-row-bg);
+        }
+        .deneme-note {
+            background: #eef1f4;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            transition: background-color 0.3s;
+        }
+        .dark-mode .deneme-note {
+            background: #2c2c2c;
+            color: var(--text-color);
+        }
+        .deneme-note h3 {
+            margin-bottom: 0.5rem;
+        }
+        .deneme-note p {
+            margin: 0;
+            font-style: italic;
+            color: #555;
+        }
+        .dark-mode .deneme-note p {
+            color: #ccc;
+        }
+
+        /* GRAFİK */
+        #chartContainer {
+            background: var(--container-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: background-color 0.3s;
+        }
+        .dark-mode #chartContainer {
+            background: #2c2c2c;
+        }
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        /* MODAL */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+        .modal-content {
+            background: var(--modal-bg);
+            padding: 2rem;
+            max-width: 750px;
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px var(--modal-shadow);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+            transition: background-color 0.3s;
+        }
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            background: none;
+            color: #888;
+            font-size: 2rem;
+            line-height: 1;
+            padding: 0;
+            box-shadow: none;
+            transition: color 0.3s ease;
+        }
+        .close-btn:hover {
+            color: #333;
+            transform: scale(1.1);
+        }
+        .dark-mode .close-btn:hover {
+            color: #e0e0e0;
+        }
+        form label, input, textarea, select {
+            display: block;
+            width: 100%;
+            margin-bottom: 0.75rem;
+            box-sizing: border-box;
+            color: var(--text-color);
+        }
+        input, textarea, select {
+            padding: 0.75rem;
+            border: 1px solid #dcdfe4;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s;
+        }
+        .dark-mode input, .dark-mode textarea, .dark-mode select {
+            background: #444;
+            color: #e0e0e0;
+            border-color: #555;
+        }
+        input:focus, textarea:focus, select:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        fieldset {
+            border: 1px solid #dcdfe4;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            background-color: #f9fbfd;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .dark-mode fieldset {
+            background-color: #2c2c2c;
+            border-color: #444;
+        }
+        legend {
+            font-weight: 600;
+            color: var(--header-color);
+            padding: 0 0.5rem;
+            font-size: 1.1rem;
+        }
+        .yanlis-grup-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+        .yanlis-soru-konu-grup {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .yanlis-soru-konu-grup input[type="number"] {
+            width: 80px;
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        /* ANALİZ BÖLÜMLERİ */
+        #dersListForAnalysis {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        #dersListForAnalysis li {
+            background-color: #eef1f4;
+            color: #555;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .dark-mode #dersListForAnalysis li {
+            background-color: #444;
+            color: #ccc;
+        }
+        #dersListForAnalysis li:hover, #dersListForAnalysis li.active {
+            background-color: #3498db;
+            color: white;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+        }
+        .dark-mode #dersListForAnalysis li:hover, .dark-mode #dersListForAnalysis li.active {
+            background-color: #bb86fc;
+            color: #1e1e1e;
+            box-shadow: 0 2px 8px rgba(187, 134, 252, 0.3);
+        }
+        
+        /* KARŞILAŞTIRMA VE SİSTEM ÖNERİLERİ */
+        #denemeSecimList {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            padding: 1rem;
+            background-color: #f9fbfd;
+            border-radius: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            transition: background-color 0.3s;
+        }
+        .dark-mode #denemeSecimList {
+            background-color: #2c2c2c;
+        }
+        #denemeSecimList label {
+            display: flex;
+            align-items: center;
+            width: auto;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+        #denemeSecimList input[type="checkbox"] {
+            margin-right: 0.5rem;
+            width: auto;
+        }
+        #karsilastirmaSonucContainer table, #sistemOnerileriContent table {
+            font-size: 0.95rem;
+        }
+        .öneri-kutu {
+            background-color: var(--success-bg);
+            border-left: 5px solid var(--success-border);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1.5rem;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .öneri-kutu h4 { color: var(--success-border); }
+        .uyari-mesaji {
+            background-color: var(--warning-bg);
+            border-left: 5px solid var(--warning-border);
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            color: var(--warning-text);
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+        }
+
+        /* YANLIŞ TAKİBİ */
+        #yanlisTakipKonuListesi, #yanlisTakipDenemeListesi {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .deneme-link-yanlis {
+            display: block;
+            background: #eef1f4;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            color: #333;
+            text-decoration: none;
+        }
+        .dark-mode .deneme-link-yanlis {
+            background: #2c2c2c;
+            color: #e0e0e0;
+        }
+        .deneme-link-yanlis:hover {
+            background-color: #d8dee2;
+        }
+        .dark-mode .deneme-link-yanlis:hover {
+            background-color: #444;
+        }
+        .deneme-link-yanlis span {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+         .deneme-link-yanlis small {
+            font-weight: 400;
+            font-size: 0.8rem;
+            color: #555;
+            margin-left: 0.5rem;
+        }
+        .dark-mode .deneme-link-yanlis small {
+            color: #ccc;
+        }
+        .yanlis-item {
+            background-color: #f9fbfd;
+            border: 1px solid #eef1f4;
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        .dark-mode .yanlis-item {
+            background-color: #2c2c2c;
+            border-color: #444;
+        }
+        .yanlis-item.solved {
+            background-color: #e9f5ee;
+            border-color: #d4edda;
+            opacity: 0.7;
+        }
+        .dark-mode .yanlis-item.solved {
+            background-color: #222d26;
+            border-color: #27ae60;
+        }
+        .yanlis-item.solved .yanlis-item-header, .yanlis-item.solved .yanlis-item-details {
+            text-decoration: line-through;
+            color: #888;
+        }
+        .dark-mode .yanlis-item.solved .yanlis-item-header, .dark-mode .yanlis-item.solved .yanlis-item-details {
+            color: #888;
+        }
+        .yanlis-item-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .dark-mode .yanlis-item-header {
+            color: #e0e0e0;
+        }
+        .yanlis-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+        .yanlis-actions label {
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem;
+            color: #555;
+            cursor: pointer;
+            margin-bottom: 0;
+            width: auto;
+        }
+        .dark-mode .yanlis-actions label {
+            color: #ccc;
+        }
+        .yanlis-actions input[type="checkbox"] {
+            margin-right: 0.5rem;
+            width: auto;
+            transform: scale(1.1);
+        }
+        .modal-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #eee;
+        }
+        .dark-mode .modal-tabs {
+            border-bottom-color: #333;
+        }
+        .modal-tabs button {
+            background: none;
+            border: none;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #888;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            border-radius: 0;
+            box-shadow: none;
+            transition: color 0.3s, border-color 0.3s;
+        }
+        .dark-mode .modal-tabs button {
+            color: #aaa;
+        }
+        .modal-tabs button.active {
+            color: var(--header-color);
+            border-bottom-color: var(--primary-btn-bg);
+        }
+
+        #themeToggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1001;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            #mainContainer { padding: 1.5rem; gap: 1.5rem; }
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.5rem; }
+            button { width: auto; text-align: center; }
+            #buttonBar, #dataActionsBar, .filter-bar {
+                 flex-direction: row;
+                 width: 100%;
+            }
+             #buttonBar > button, #dataActionsBar > button, #dataActionsBar > label > button {
+                flex-grow: 1;
+             }
+            .deneme-list-item { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+            .deneme-link-container { margin-bottom: 0.5rem;}
+            .deneme-summary { margin: 0; }
+            .deneme-actions { width: 100%; justify-content: flex-start; }
+            .modal-content { padding: 1.5rem; }
+            th, td { padding: 0.8rem; font-size: 0.85rem; }
+            .yanlis-item-header { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+            .yanlis-actions { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+            #stopwatchContainer {
+                padding: 1.5rem;
+                min-height: auto;
+            }
+            #stopwatchDisplay {
+                font-size: 4rem;
+            }
+            #stopwatchButtons button {
+                font-size: 1rem;
+                padding: 0.75rem 1rem;
+            }
+            #fullscreenButton {
+                top: 1rem;
+                right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="mainContainer">
+        <h1>Hukuk Deneme Takip</h1>
+        <div id="buttonBar">
+            <button id="addDenemeBtn" class="primary" onclick="app.openModal()">+ Yeni Deneme Ekle</button>
+            <button id="yanlislarBtn" class="secondary" onclick="app.openYanlislarModal()">Yanlışlarımın Listesi</button>
+            <button id="yanlisTakibiBtn" class="secondary" onclick="app.openYanlisTakipModal()">Yanlış Takibi</button>
+            <button id="dersAnalizBtn" class="secondary" onclick="app.openDersAnaliz()">Ders Analizi</button>
+            <button id="karsilastirmaBtn" class="secondary" onclick="app.openKarsilastirmaModal()">Karşılaştırma</button>
+            <button id="sistemOnerileriBtn" class="secondary" onclick="app.openSistemOnerileri()">Sistem Önerileri</button>
+            <button id="stopwatchBtn" class="secondary" onclick="app.openStopwatch()">Kronometre</button>
+        </div>
+
+        <div id="dataActionsBar">
+            <button class="secondary" onclick="app.exportData()">Verileri Dışa Aktar</button>
+            <label for="importFile" style="margin: 0;">
+                <button class="secondary" onclick="document.getElementById('importFile').click()">Verileri İçe Aktar</button>
+            </label>
+            <input type="file" id="importFile" accept=".json" style="display: none;" onchange="app.importData(event)"/>
+        </div>
+
+        <div id="denemeListesi"></div>
+
+        <table id="denemeTable" style="display:none">
+            <thead>
+                <tr>
+                    <th>Ders</th>
+                    <th>Doğru</th>
+                    <th>Yanlış</th>
+                    <th>Yanlış Konular</th>
+                    <th>Yanlış Soru Numaraları</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <div class="deneme-note"></div>
+
+        <div id="chartContainer">
+            <div class="chart-header">
+                <h2>Denemeler Net Gelişim Grafiği</h2>
+                <div id="chartFilterBar" class="filter-bar">
+                    <button class="secondary active" onclick="app.renderProgressChart(false, this)">Tümünü Göster</button>
+                    <button class="secondary" onclick="app.renderProgressChart(true, this)">Son 5 Deneme</button>
+                </div>
+            </div>
+            <canvas id="progressChart"></canvas>
+        </div>
+    </div>
+
+    <div id="stopwatchContainer">
+        <button id="backToHomeButton" class="secondary" onclick="app.closeStopwatch()">← Anasayfaya Dön</button>
+        <button id="fullscreenButton" class="secondary" onclick="app.toggleFullscreen()">&#x26F6;</button>
+        <div id="stopwatchDisplay">00:00:00</div>
+        <div id="stopwatchButtons">
+            <button id="startStopBtn" class="primary" onclick="app.startStopwatch()">Başlat</button>
+            <button id="resetBtn" class="secondary" onclick="app.resetStopwatch()">Sıfırla</button>
+            <button id="saveBtn" class="secondary" onclick="app.saveStopwatchTime()">Kaydet</button>
+        </div>
+        <div id="savedTimesContainer">
+            <h4>Kaydedilen Süreler</h4>
+            <ul id="savedTimesList"></ul>
+        </div>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="app.closeModal()">×</button>
+            <h3>Deneme Ekle / Düzenle</h3>
+            <form id="denemeForm">
+                <label>Deneme Adı:<input type="text" id="denemeAdi" required autocomplete="off" /></label>
+                <label>Deneme Tarihi (İsteğe Bağlı):<input type="date" id="denemeTarihi" /></label>
+                <div id="dersInputs"></div>
+                <label>Kısa Yorum / Not: <textarea id="denemeNotu" placeholder="Deneme hakkında not..."></textarea></label>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <button type="submit" class="primary">Kaydet</button>
+                    <button type="button" class="secondary" onclick="app.closeModal()">İptal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="yanlisModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="app.closeYanlislarModal()">×</button>
+            <h3>Yanlışlarımın Detaylı Listesi</h3>
+             <div class="filter-bar">
+                <button class="secondary active" onclick="app.showYanlisDenemeListesi(false, this)">Tümünü Göster</button>
+                <button class="secondary" onclick="app.showYanlisDenemeListesi(true, this)">Son 5 Deneme</button>
+            </div>
+            <div id="yanlislarContent" style="margin-top: 1rem;">
+                <div id="yanlisDenemeListesi"></div>
+                <div id="yanlisDetayContainer" style="display:none;">
+                    <a href="#" class="back-btn" onclick="app.showYanlisDenemeListesi(); return false;">← Geri</a>
+                    <h4 id="yanlisDenemeTitle"></h4>
+                    <div id="yanlisKonuAnalizi"></div>
+                    <table id="yanlisDetayTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="yanlisTakipModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="app.closeYanlisTakipModal()">×</button>
+            <h3 id="yanlisTakipModalTitle">Yanlış Soru Takibi</h3>
+            <div class="modal-tabs">
+                <button id="yanlisTakipTabDeneme" class="active" onclick="app.switchYanlisTakipView('deneme')">Deneme Bazlı</button>
+                <button id="yanlisTakipTabKonu" onclick="app.switchYanlisTakipView('konu')">Konu Özeti</button>
+            </div>
+            <div id="yanlisTakipDenemeListContainer">
+                <p>Çözmeniz gereken yanlış sorularınızın olduğu denemeler:</p>
+                <ul id="yanlisTakipDenemeListesi"></ul>
+            </div>
+            <div id="yanlisTakipKonuOzetContainer" style="display:none;">
+                 <p>Çözülmemiş yanlışlarınıza göre tekrar etmeniz gereken konular:</p>
+                 <div id="yanlisTakipKonuListesi"></div>
+            </div>
+            <div id="yanlisTakipSoruListContainer" style="display:none;">
+                <button onclick="app.renderYanlisTakipDenemeList()" class="secondary">← Geri</button>
+                <h4 id="yanlisTakipSoruListTitle"></h4>
+                <div id="yanlisTakipToggle" style="margin: 1rem 0;">
+                    <input type="checkbox" id="yanlisTakipShowAll" onchange="app.showYanlisTakipSoruList(this.checked)"/>
+                    <label for="yanlisTakipShowAll">Tümünü Göster (Çözülenler dahil)</label>
+                </div>
+                <ul id="yanlisTakipListesi"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="dersAnalizModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="app.closeDersAnalizModal()">×</button>
+            <h3>Ders Analizi</h3>
+            <div id="dersAnalizFilterBar" class="filter-bar" style="margin-bottom: 1rem;">
+                <button class="secondary active" onclick="app.filterDersAnalizi(false, this)">Tüm Denemeler</button>
+                <button class="secondary" onclick="app.filterDersAnalizi(true, this)">Son 5 Deneme</button>
+            </div>
+            <ul id="dersListForAnalysis"></ul>
+            <div id="dersDetayAnalizContent"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="karsilastirmaModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="app.closeKarsilastirmaModal()">×</button>
+            <h3>Deneme Karşılaştırma</h3>
+            <p>Karşılaştırılacak denemeleri seçin:</p>
+            <div id="denemeSecimList"></div>
+            <button onclick="app.compareSelectedDenemeler()" class="primary" style="margin-top:1rem;">Karşılaştır</button>
+            <div id="karsilastirmaSonucContainer" style="margin-top: 1.5rem;"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="sistemOnerileriModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="app.closeSistemOnerileriModal()">×</button>
+            <h3>Sistem Önerileri</h3>
+            <div id="sistemOnerileriContent"></div>
+        </div>
+    </div>
+    <button id="themeToggle" class="secondary" onclick="app.toggleTheme()">Temayı Değiştir</button>
+
+
+    <script>
+        const app = (() => {
+            // Sizin JSONBin.io bilgileriniz buraya gelecek
+            // Lütfen aşağıdaki değerleri kendi Bin ID'niz ve Private Key'inizle değiştirin.
+            const BIN_ID = '68910c69f7e7a370d1f3c646';
+            const PRIVATE_KEY = '$2a$10$JaVVOpnQxhBYRGTV7qP5HunHRXMSinrOLKOyMdqSzOfmX58BUSrwm';
+
+            // Sabitler
+            const soruSayilari = {
+                "Türkçe": 6, "Matematik": 6, "Tarih": 6, "İnkılap": 6, "Vatandaşlık": 6,
+                "Anayasa Hukuku": 6, "İdare Hukuku": 6, "İdari Yargılama Usulü": 6, "Hukuk Yargılama Usulü": 6,
+                "Medeni Hukuk": 6, "Milletlerarası Özel Hukuku": 6,
+                "Borçlar Hukuku": 6, "Ceza Hukuku": 6, "Ceza Yargılama Usulü": 6,
+                "Ticaret Hukuku": 6, "İcra ve İflas Hukuku": 6, "İş Hukuku": 5
+            };
+            const dersler = Object.keys(soruSayilari);
+
+            // Elemanlar
+            const elements = {
+                mainContainer: document.getElementById("mainContainer"),
+                stopwatchContainer: document.getElementById("stopwatchContainer"),
+                stopwatchDisplay: document.getElementById("stopwatchDisplay"),
+                startStopBtn: document.getElementById("startStopBtn"),
+                savedTimesList: document.getElementById("savedTimesList"),
+                modal: document.getElementById("modal"),
+                yanlisModal: document.getElementById("yanlisModal"),
+                yanlislarContent: document.getElementById("yanlislarContent"),
+                yanlisDenemeListesi: document.getElementById("yanlisDenemeListesi"),
+                yanlisDetayContainer: document.getElementById("yanlisDetayContainer"),
+                yanlisDenemeTitle: document.getElementById("yanlisDenemeTitle"),
+                yanlisKonuAnalizi: document.getElementById("yanlisKonuAnalizi"),
+                yanlisDetayTable: document.getElementById("yanlisDetayTable"),
+                dersInputs: document.getElementById("dersInputs"),
+                denemeForm: document.getElementById("denemeForm"),
+                denemeNotu: document.getElementById("denemeNotu"),
+                tableBody: document.querySelector("#denemeTable tbody"),
+                denemeListesiEl: document.getElementById("denemeListesi"),
+                denemeTable: document.getElementById("denemeTable"),
+                dersAnalizModal: document.getElementById("dersAnalizModal"),
+                dersListForAnalysis: document.getElementById("dersListForAnalysis"),
+                dersDetayAnalizContent: document.getElementById("dersDetayAnalizContent"),
+                progressChartCtx: document.getElementById("progressChart").getContext("2d"),
+                buttonBarButtons: document.querySelectorAll('#buttonBar button'),
+                karsilastirmaModal: document.getElementById("karsilastirmaModal"),
+                denemeSecimList: document.getElementById("denemeSecimList"),
+                karsilastirmaSonucContainer: document.getElementById("karsilastirmaSonucContainer"),
+                sistemOnerileriModal: document.getElementById("sistemOnerileriModal"),
+                sistemOnerileriContent: document.getElementById("sistemOnerileriContent"),
+                yanlisTakipModal: document.getElementById("yanlisTakipModal"),
+                yanlisTakipDenemeListesi: document.getElementById("yanlisTakipDenemeListesi"),
+                yanlisTakipKonuOzetContainer: document.getElementById("yanlisTakipKonuOzetContainer"),
+                yanlisTakipKonuListesi: document.getElementById("yanlisTakipKonuListesi"),
+                yanlisTakipDenemeListContainer: document.getElementById("yanlisTakipDenemeListContainer"),
+                yanlisTakipSoruListContainer: document.getElementById("yanlisTakipSoruListContainer"),
+                yanlisTakipSoruListTitle: document.getElementById("yanlisTakipSoruListTitle"),
+                yanlisTakipListesi: document.getElementById("yanlisTakipListesi"),
+                yanlisTakipShowAll: document.getElementById("yanlisTakipShowAll"),
+                yanlisTakibiBtn: document.getElementById("yanlisTakibiBtn"),
+                denemeNoteDiv: document.querySelector('.deneme-note'),
+                fullscreenButton: document.getElementById("fullscreenButton"),
+                yanlisTakipTabDeneme: document.getElementById("yanlisTakipTabDeneme"),
+                yanlisTakipTabKonu: document.getElementById("yanlisTakipTabKonu"),
+            };
+            // Değişkenler
+            let denemeler = [];
+            let yanlisTakipData = {};
+            let dersKonulari = {};
+            let stopwatchTimes = [];
+            let aktifDeneme = null;
+            let aktifDersAnaliz = null;
+            let progressChart = null;
+            window.singleDersChartInstance = null;
+            let currentYanlisTakipDenemeId = null;
+
+            // Kronometre değişkenleri
+            let timer;
+            let isRunning = false;
+            let startTime;
+            let elapsedTime = 0;
+
+            // --- Temel Fonksiyonlar ---
+            const clearAllViews = () => {
+                elements.mainContainer.style.display = "none";
+                elements.stopwatchContainer.style.display = "none";
+                elements.modal.style.display = "none";
+                elements.yanlisModal.style.display = "none";
+                elements.yanlisTakipModal.style.display = "none";
+                elements.dersAnalizModal.style.display = "none";
+                elements.karsilastirmaModal.style.display = "none";
+                elements.sistemOnerileriModal.style.display = "none";
+                elements.denemeTable.style.display = "none";
+                elements.denemeNoteDiv.style.display = "none";
+                aktifDeneme = null;
+                aktifDersAnaliz = null;
+                if (window.singleDersChartInstance) {
+                    window.singleDersChartInstance.destroy();
+                    window.singleDersChartInstance = null;
+                }
+                elements.buttonBarButtons.forEach(btn => btn.classList.remove('active-menu-btn'));
+            };
+
+            const renderAllComponents = () => {
+                clearAllViews();
+                elements.mainContainer.style.display = "flex";
+                renderDenemeList();
+                renderProgressChart(false, document.querySelector('#chartFilterBar button'));
+                updateYanlisTakibiButtonStatus();
+            };
+
+            const toggleTheme = () => {
+                document.body.classList.toggle("dark-mode");
+            };
+            
+            const formatDate = (dateString) => {
+                if (!dateString) return '';
+                const date = new Date(dateString);
+                // Saat dilimi sorunlarını önlemek için UTC tarih olarak ele al
+                const userTimezoneOffset = date.getTimezoneOffset() * 60000;
+                const correctedDate = new Date(date.getTime() + userTimezoneOffset);
+                return correctedDate.toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' });
+            };
+
+            // --- Veri Yönetimi ---
+            const saveToRemote = async () => {
+                const combinedData = {
+                    denemeler: denemeler,
+                    yanlisTakipData: yanlisTakipData,
+                    dersKonulari: dersKonulari,
+                    stopwatchTimes: stopwatchTimes,
+                };
+                const url = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+                try {
+                    const response = await fetch(url, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Master-Key': PRIVATE_KEY,
+                            'X-Bin-Versioning': false
+                        },
+                        body: JSON.stringify(combinedData)
+                    });
+                    if (!response.ok) {
+                        throw new Error(`Veri kaydedilirken hata oluştu: ${response.statusText}`);
+                    }
+                    console.log("Veriler JSONBin.io'ya başarıyla kaydedildi.");
+                } catch (e) {
+                    console.error("Veri kaydetme hatası:", e);
+                    alert("Veriler kaydedilirken bir sorun oluştu. İnternet bağlantınızı kontrol edin veya lütfen daha sonra tekrar deneyin.");
+                }
+            };
+
+            const loadFromRemote = async () => {
+                const url = `https://api.jsonbin.io/v3/b/${BIN_ID}/latest`;
+                try {
+                    const response = await fetch(url, {
+                        headers: {
+                            'X-Master-Key': PRIVATE_KEY
+                        }
+                    });
+                    if (!response.ok) {
+                        throw new Error(`Veri yüklenirken hata oluştu: ${response.statusText}`);
+                    }
+                    const { record } = await response.json();
+                    denemeler = record.denemeler || [];
+                    yanlisTakipData = record.yanlisTakipData || {};
+                    dersKonulari = record.dersKonulari || {};
+                    stopwatchTimes = record.stopwatchTimes || [];
+                    console.log("Veriler JSONBin.io'dan başarıyla yüklendi.");
+                } catch (e) {
+                    console.error("Veri yükleme hatası:", e);
+                    alert("Verileriniz yüklenirken bir sorun oluştu. JSONBin.io ayarlarınızı veya internet bağlantınızı kontrol edin.");
+                    denemeler = [];
+                    yanlisTakipData = {};
+                    dersKonulari = {};
+                    stopwatchTimes = [];
+                }
+            };
+            
+            const syncYanlisTakipData = () => {
+                const yeniYanlisTakipData = {};
+                denemeler.forEach(deneme => {
+                    const denemeId = deneme.id;
+                    yeniYanlisTakipData[denemeId] = {
+                        ad: deneme.ad,
+                        tarih: deneme.tarih,
+                        dersler: {}
+                    };
+                    deneme.detaylar.forEach(detay => {
+                        if (detay.yanlislar && detay.yanlislar.length > 0) {
+                            yeniYanlisTakipData[denemeId].dersler[detay.ders] = detay.yanlislar.map(yanlis => {
+                                const eskiSoru = yanlisTakipData[denemeId]?.dersler[detay.ders]?.find(s => s.soruNo == yanlis.soruNo);
+                                return {
+                                    soruNo: yanlis.soruNo,
+                                    konu: yanlis.konu,
+                                    cozuldu: eskiSoru ? eskiSoru.cozuldu : false
+                                };
+                            });
+                        }
+                    });
+                });
+                yanlisTakipData = yeniYanlisTakipData;
+            };
+            
+            // --- İçe/Dışa Aktarma Fonksiyonları ---
+            const exportData = () => {
+                const combinedData = {
+                    denemeler: denemeler,
+                    yanlisTakipData: yanlisTakipData,
+                    dersKonulari: dersKonulari,
+                    stopwatchTimes: stopwatchTimes
+                };
+                const dataStr = JSON.stringify(combinedData, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                const exportFileDefaultName = 'deneme-verileri.json';
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                document.body.appendChild(linkElement);
+                linkElement.click();
+                document.body.removeChild(linkElement);
+            };
+            const importData = (event) => {
+                const file = event.target.files[0];
+                if (!file) {
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        if (importedData && Array.isArray(importedData.denemeler)) {
+                            if (confirm("Mevcut veriler silinip, yeni verilerle değiştirilecektir. Emin misiniz?")) {
+                                denemeler = importedData.denemeler;
+                                // Geriye dönük uyumluluk: Eski verilerde tarih yoksa, id'den (timestamp) oluştur.
+                                denemeler.forEach(d => {
+                                    if (!d.tarih) {
+                                        d.tarih = new Date(d.id).toISOString().split('T')[0];
+                                    }
+                                });
+                                yanlisTakipData = importedData.yanlisTakipData || {};
+                                dersKonulari = importedData.dersKonulari || {};
+                                stopwatchTimes = importedData.stopwatchTimes || [];
+                                syncYanlisTakipData();
+                                await saveToRemote();
+                                renderAllComponents();
+                                alert("Veriler başarıyla içe aktarıldı ve buluta kaydedildi.");
+                            }
+                        } else {
+                            alert("Hata: İçe aktarılan dosya geçerli bir JSON formatında değil.");
+                        }
+                    } catch (err) {
+                        alert("Hata: Dosya okunurken bir sorun oluştu. Lütfen geçerli bir JSON dosyası seçin.");
+                    }
+                };
+                reader.readAsText(file);
+            };
+            // --- Modal Fonksiyonları ---
+            const openModal = (editDeneme = null) => {
+                elements.denemeForm.reset();
+                elements.dersInputs.innerHTML = "";
+                elements.denemeNotu.value = "";
+                aktifDeneme = null;
+
+                dersler.forEach(ders => {
+                    const maxSoru = soruSayilari[ders];
+                    const fieldset = document.createElement("fieldset");
+                    fieldset.innerHTML = `<legend>${ders} (Toplam Soru: ${maxSoru})</legend>`;
+                    
+                    const dogruLabel = document.createElement("label");
+                    dogruLabel.innerHTML = `Doğru: <input type="number" min="0" max="${maxSoru}" name="dogru-${ders}" value="0" oninput="app.updateYanlis('${ders}')" required />`;
+                    fieldset.appendChild(dogruLabel);
+    
+                    const yanlisLabel = document.createElement("label");
+                    yanlisLabel.innerHTML = `Yanlış: <input type="number" readonly name="yanlis-${ders}" value="${maxSoru}" />`;
+                    fieldset.appendChild(yanlisLabel);
+                    
+                    const yanlisGrupContainer = document.createElement("div");
+                    yanlisGrupContainer.classList.add("yanlis-grup-container");
+                    yanlisGrupContainer.id = `yanlis-grup-container-${ders}`;
+                    fieldset.appendChild(yanlisGrupContainer);
+
+                    elements.dersInputs.appendChild(fieldset);
+                });
+                
+                if (editDeneme) {
+                    aktifDeneme = editDeneme;
+                    document.getElementById("denemeAdi").value = aktifDeneme.ad;
+                    document.getElementById("denemeTarihi").value = aktifDeneme.tarih || '';
+                    elements.denemeNotu.value = aktifDeneme.note || "";
+                    aktifDeneme.detaylar.forEach(({ ders, dogru, yanlislar }) => {
+                        const dogruInput = elements.denemeForm[`dogru-${ders}`];
+                        if (dogruInput) {
+                            dogruInput.value = dogru;
+                            updateYanlis(ders, yanlislar);
+                        }
+                    });
+                } else {
+                    document.getElementById("denemeTarihi").value = new Date().toISOString().split('T')[0];
+                    dersler.forEach(ders => updateYanlis(ders));
+                }
+
+                elements.modal.style.display = "flex";
+            };
+
+            const closeModal = () => {
+                elements.modal.style.display = "none";
+                aktifDeneme = null;
+            };
+
+            const updateYanlis = (ders, values = []) => {
+                const dogruInput = elements.denemeForm[`dogru-${ders}`];
+                const yanlisInput = elements.denemeForm[`yanlis-${ders}`];
+                const yanlisGrupContainer = document.getElementById(`yanlis-grup-container-${ders}`);
+                const maxSoru = soruSayilari[ders];
+
+                let dogru = parseInt(dogruInput.value);
+                if (isNaN(dogru) || dogru < 0) {
+                    dogru = 0;
+                } else if (dogru > maxSoru) {
+                    dogru = maxSoru;
+                    dogruInput.value = maxSoru;
+                }
+                const yanlisCount = maxSoru - dogru;
+                yanlisInput.value = yanlisCount;
+
+                yanlisGrupContainer.innerHTML = "";
+                if (yanlisCount > 0) {
+                    const datalistId = `konular-${ders}`;
+                    const datalist = document.createElement('datalist');
+                    datalist.id = datalistId;
+                    const dersinKonulari = dersKonulari[ders] || [];
+                    dersinKonulari.forEach(konu => {
+                        const option = document.createElement('option');
+                        option.value = konu;
+                        datalist.appendChild(option);
+                    });
+                    yanlisGrupContainer.appendChild(datalist);
+
+                    for (let i = 0; i < yanlisCount; i++) {
+                        const div = document.createElement("div");
+                        div.classList.add("yanlis-soru-konu-grup");
+                        div.innerHTML = `
+                            <input type="number" name="yanlisSoruNo-${ders}-${i}" placeholder="Soru No" min="1" value="${values[i]?.soruNo || ''}">
+                            <input type="text" name="yanlisKonu-${ders}-${i}" placeholder="Konu Adı" value="${values[i]?.konu || ''}" list="${datalistId}">
+                        `;
+                        yanlisGrupContainer.appendChild(div);
+                    }
+                }
+            };
+            
+            elements.denemeForm.addEventListener("submit", async e => {
+                e.preventDefault();
+                const ad = document.getElementById("denemeAdi").value.trim();
+                let tarih = document.getElementById("denemeTarihi").value;
+                const note = elements.denemeNotu.value.trim();
+                
+                if (!ad) {
+                    alert("Deneme adı boş olamaz!");
+                    return;
+                }
+                
+                if (!tarih) {
+                    tarih = new Date().toISOString().split('T')[0]; // Eğer tarih girilmediyse bugünün tarihini ata
+                }
+
+                let detaylar = [];
+                let isValid = true;
+                let newKonular = new Set();
+                
+                for (const ders of dersler) {
+                    const dogruInput = elements.denemeForm[`dogru-${ders}`];
+                    const yanlisCount = parseInt(elements.denemeForm[`yanlis-${ders}`].value);
+                    const maxSoru = soruSayilari[ders];
+                    let dogru = parseInt(dogruInput.value);
+                    if (isNaN(dogru) || dogru < 0 || dogru > maxSoru) {
+                        alert(`${ders} için doğru sayısı 0 ile ${maxSoru} arasında olmalı.`);
+                        isValid = false;
+                        break;
+                    }
+                    const yanlis = maxSoru - dogru;
+                    let yanlislar = [];
+                    for (let i = 0; i < yanlisCount; i++) {
+                        const soruNoInput = elements.denemeForm[`yanlisSoruNo-${ders}-${i}`];
+                        const konuInput = elements.denemeForm[`yanlisKonu-${ders}-${i}`];
+                        if (soruNoInput && soruNoInput.value) {
+                            const konu = konuInput?.value.trim() || '';
+                            if (konu) {
+                                newKonular.add({ ders: ders, konu: konu });
+                            }
+                            yanlislar.push({
+                                soruNo: soruNoInput.value,
+                                konu: konu
+                            });
+                        }
+                    }
+                    detaylar.push({ ders, dogru, yanlis, yanlislar });
+                }
+                if (!isValid) return;
+
+                newKonular.forEach(item => {
+                    if (!dersKonulari[item.ders]) {
+                        dersKonulari[item.ders] = [];
+                    }
+                    if (!dersKonulari[item.ders].includes(item.konu)) {
+                        dersKonulari[item.ders].push(item.konu);
+                    }
+                });
+
+                if (aktifDeneme) {
+                    aktifDeneme.ad = ad;
+                    aktifDeneme.tarih = tarih;
+                    aktifDeneme.detaylar = detaylar;
+                    aktifDeneme.note = note;
+                } else {
+                    denemeler.push({ id: Date.now(), ad, tarih, detaylar, note });
+                }
+                
+                syncYanlisTakipData();
+                await saveToRemote();
+                closeModal();
+                renderAllComponents();
+            });
+
+            // --- Genel Görünüm Güncelleme ---
+            const renderDenemeList = () => {
+                // Önceki geri butonu varsa kaldır
+                const existingBackBtn = document.querySelector('#mainContainer .back-btn');
+                if (existingBackBtn) {
+                    existingBackBtn.remove();
+                }
+
+                elements.denemeListesiEl.innerHTML = "";
+                elements.denemeListesiEl.style.display = "flex";
+                document.getElementById("chartContainer").style.display = denemeler.length > 1 ? "block" : "none";
+                elements.denemeTable.style.display = "none";
+                elements.denemeNoteDiv.style.display = "none";
+
+                if (denemeler.length === 0) {
+                    elements.denemeListesiEl.innerHTML = "<div class='uyari-mesaji'>Henüz deneme eklenmedi. Başlamak için '+ Yeni Deneme Ekle' butonunu kullanın.</div>";
+                    return;
+                }
+                
+                // Denemeleri tarihe göre sırala (en yeni en üstte)
+                denemeler.sort((a, b) => new Date(b.tarih) - new Date(a.tarih));
+
+                denemeler.forEach(deneme => {
+                    const div = document.createElement("div");
+                    div.classList.add("deneme-list-item");
+
+                    const linkContainer = document.createElement("div");
+                    linkContainer.classList.add("deneme-link-container");
+
+                    const a = document.createElement("a");
+                    a.classList.add("deneme-link");
+                    a.textContent = deneme.ad;
+                    a.href = "#";
+                    a.onclick = () => {
+                        showDenemeDetails(deneme.id);
+                        return false;
+                    };
+                    
+                    const tarihDiv = document.createElement("div");
+                    tarihDiv.classList.add("deneme-tarih");
+                    tarihDiv.textContent = formatDate(deneme.tarih);
+
+                    linkContainer.appendChild(a);
+                    linkContainer.appendChild(tarihDiv);
+
+                    const totalDogru = deneme.detaylar.reduce((sum, item) => sum + Number(item.dogru), 0);
+                    const totalYanlis = deneme.detaylar.reduce((sum, item) => sum + Number(item.yanlis), 0);
+                    const summarySpan = document.createElement("span");
+                    summarySpan.classList.add("deneme-summary");
+                    summarySpan.textContent = ` (D: ${totalDogru} / Y: ${totalYanlis})`;
+                   
+                    const actionsDiv = document.createElement("div");
+                    actionsDiv.classList.add("deneme-actions");
+                    const editBtn = document.createElement("button");
+                    editBtn.textContent = "Düzenle";
+                    editBtn.classList.add('secondary');
+                    editBtn.onclick = (ev) => {
+                        ev.stopPropagation();
+                        openModal(deneme);
+                    };
+                    const deleteBtn = document.createElement("button");
+                    deleteBtn.textContent = "Sil";
+                    deleteBtn.classList.add("danger");
+                    deleteBtn.onclick = async (ev) => {
+                        ev.stopPropagation();
+                        if (confirm(`"${deneme.ad}" denemesini silmek istediğine emin misin?`)) {
+                            denemeler = denemeler.filter(d => d.id !== deneme.id);
+                            syncYanlisTakipData();
+                            await saveToRemote();
+                            renderAllComponents();
+                        }
+                    };
+                    actionsDiv.appendChild(editBtn);
+                    actionsDiv.appendChild(deleteBtn);
+                    
+                    div.appendChild(linkContainer);
+                    div.appendChild(summarySpan);
+                    div.appendChild(actionsDiv);
+                    elements.denemeListesiEl.appendChild(div);
+                });
+            };
+
+            const showDenemeDetails = (denemeId) => {
+                const deneme = denemeler.find(d => d.id === denemeId);
+                if (!deneme) return;
+
+                elements.denemeListesiEl.style.display = "none";
+                elements.denemeTable.style.display = "";
+                elements.denemeNoteDiv.style.display = deneme.note ? "block" : "none";
+                document.getElementById("chartContainer").style.display = "none";
+
+                let html = "";
+                deneme.detaylar.forEach(({ ders, dogru, yanlis, yanlislar }) => {
+                    const konular = yanlislar.map(y => y.konu).filter(Boolean).join(', ') || "-";
+                    const soruNolar = yanlislar.map(y => y.soruNo).filter(Boolean).join(', ') || "-";
+                    html += `<tr> <td>${ders}</td> <td>${dogru}</td> <td>${yanlis}</td> <td>${konular}</td> <td>${soruNolar}</td> </tr>`;
+                });
+                elements.tableBody.innerHTML = html;
+                elements.denemeNoteDiv.innerHTML = deneme.note ? `<h3>Deneme Notu (${formatDate(deneme.tarih)}):</h3><p>${deneme.note}</p>` : '';
+
+                // Geri dönüş butonu ekleme
+                const backBtn = document.createElement('a');
+                backBtn.href = "#";
+                backBtn.classList.add('back-btn');
+                backBtn.textContent = '← Anasayfaya Dön';
+                backBtn.onclick = (e) => {
+                    e.preventDefault();
+                    renderAllComponents();
+                };
+                elements.denemeListesiEl.parentNode.insertBefore(backBtn, elements.denemeListesiEl);
+            };
+
+            const renderProgressChart = (lastFive = false, buttonEl = null) => {
+                 if (buttonEl) {
+                    const parent = buttonEl.parentElement;
+                    parent.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                    buttonEl.classList.add('active');
+                }
+
+                if (progressChart) {
+                    progressChart.destroy();
+                    progressChart = null;
+                }
+                if (denemeler.length < 2) {
+                    document.getElementById("chartContainer").style.display = "none";
+                    return;
+                }
+                
+                document.getElementById("chartContainer").style.display = "block";
+                
+                let denemelerSource = [...denemeler].sort((a, b) => new Date(a.tarih) - new Date(b.tarih));
+                if (lastFive) {
+                    denemelerSource = denemelerSource.slice(-5);
+                }
+
+                const labels = denemelerSource.map(d => `${d.ad} (${new Date(d.tarih).toLocaleDateString('tr-TR')})`);
+                const netler = denemelerSource.map(d => d.detaylar.reduce((sum, item) => sum + Number(item.dogru) - Number(item.yanlis / 4), 0));
+                
+                progressChart = new Chart(elements.progressChartCtx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Toplam Net',
+                            data: netler,
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                title: { display: true, text: 'Net Sayısı' }
+                            }
+                        }
+                    }
+                });
+            };
+
+            const openDersAnaliz = () => {
+                clearAllViews();
+                elements.dersAnalizModal.style.display = "flex";
+                renderDersListForAnalysis();
+                filterDersAnalizi(false, document.querySelector('#dersAnalizFilterBar button:first-child'));
+            };
+            const closeDersAnalizModal = () => {
+                elements.dersAnalizModal.style.display = "none";
+                renderAllComponents();
+            };
+            const renderDersListForAnalysis = () => {
+                elements.dersListForAnalysis.innerHTML = "";
+                dersler.forEach(ders => {
+                    const li = document.createElement("li");
+                    li.textContent = ders;
+                    li.onclick = () => {
+                        const lastFive = document.querySelector('#dersAnalizFilterBar button:nth-child(2)').classList.contains('active');
+                        
+                        // --- YENİ EKLENEN KONTROL ---
+                        // Eğer tıklanan ders zaten aktif olan derse, genel analize geri dön.
+                        if (ders === aktifDersAnaliz) {
+                            renderGenelDersAnalizi(lastFive);
+                        } 
+                        // Değilse, o dersin detayını göster (eski davranış).
+                        else { 
+                            renderDersDetayAnaliz(ders, lastFive);
+                        }
+                        // --- DEĞİŞİKLİK SONU ---
+                    };
+                    elements.dersListForAnalysis.appendChild(li);
+                });
+                if(aktifDersAnaliz) {
+                     const lastFive = document.querySelector('#dersAnalizFilterBar button:nth-child(2)').classList.contains('active');
+                     renderDersDetayAnaliz(aktifDersAnaliz, lastFive);
+                }
+            };
+            
+            const renderGenelDersAnalizi = (lastFive = false) => {
+                aktifDersAnaliz = null; // Aktif ders seçimini temizle
+                document.querySelectorAll('#dersListForAnalysis li').forEach(li => li.classList.remove('active'));
+
+                let denemelerSource = [...denemeler].sort((a, b) => new Date(a.tarih) - new Date(b.tarih));
+                if (lastFive) {
+                    denemelerSource = denemelerSource.slice(-5);
+                }
+
+                if (denemelerSource.length === 0) {
+                    elements.dersDetayAnalizContent.innerHTML = "<div class='uyari-mesaji'>Analiz için deneme verisi bulunamadı.</div>";
+                    return;
+                }
+
+                const dersYanlisSayilari = {};
+                dersler.forEach(ders => {
+                    dersYanlisSayilari[ders] = 0;
+                });
+
+                denemelerSource.forEach(deneme => {
+                    deneme.detaylar.forEach(detay => {
+                        dersYanlisSayilari[detay.ders] += detay.yanlis;
+                    });
+                });
+
+                const siraliDersler = Object.entries(dersYanlisSayilari)
+                    .filter(([, yanlisSayisi]) => yanlisSayisi > 0)
+                    .sort(([, a], [, b]) => b - a);
+
+                let html = `<h4>En Çok Yanlış Yapılan Dersler (${lastFive ? 'Son 5 Deneme' : 'Tüm Denemeler'})</h4>`;
+
+                if (siraliDersler.length === 0) {
+                    html += "<div class='uyari-mesaji'>Tebrikler! Bu periyotta yanlışınız bulunan bir ders yok.</div>";
+                } else {
+                    html += `<ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">`;
+                    siraliDersler.forEach(([ders, sayi]) => {
+                        html += `
+                            <li class="yanlis-item" style="flex-direction: row; justify-content: space-between; align-items: center; padding: 0.8rem 1rem;">
+                                <strong>${ders}</strong> 
+                                <span style="color: var(--danger-btn-bg); font-weight: 600;">(${sayi} yanlış)</span>
+                            </li>`;
+                    });
+                    html += `</ul>`;
+                }
+                elements.dersDetayAnalizContent.innerHTML = html;
+            };
+
+            const filterDersAnalizi = (lastFive, buttonEl) => {
+                if (buttonEl) {
+                    const parent = buttonEl.parentElement;
+                    parent.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                    buttonEl.classList.add('active');
+                }
+
+                if (aktifDersAnaliz) {
+                    renderDersDetayAnaliz(aktifDersAnaliz, lastFive);
+                } else {
+                    renderGenelDersAnalizi(lastFive);
+                }
+            };
+
+            const renderDersDetayAnaliz = (dersAdi, lastFive = false) => {
+                aktifDersAnaliz = dersAdi;
+                document.querySelectorAll('#dersListForAnalysis li').forEach(li => {
+                    li.classList.remove('active');
+                    if(li.textContent === dersAdi) {
+                        li.classList.add('active');
+                    }
+                });
+                
+                elements.dersDetayAnalizContent.innerHTML = "";
+                if (window.singleDersChartInstance) {
+                    window.singleDersChartInstance.destroy();
+                }
+                
+                let denemelerSource = [...denemeler].sort((a, b) => new Date(a.tarih) - new Date(b.tarih));
+                if (lastFive) {
+                    denemelerSource = denemelerSource.slice(-5);
+                }
+
+                if (denemelerSource.length === 0) {
+                    elements.dersDetayAnalizContent.innerHTML = "<p>Deneme verisi bulunamadı.</p>";
+                    return;
+                }
+
+                const denemeAdlari = denemelerSource.map(d => d.ad);
+                const dogruVerileri = denemelerSource.map(d => {
+                    const detay = d.detaylar.find(det => det.ders === dersAdi);
+                    return detay ? detay.dogru : 0;
+                });
+                const yanlisVerileri = denemelerSource.map(d => {
+                    const detay = d.detaylar.find(det => det.ders === dersAdi);
+                    return detay ? detay.yanlis : 0;
+                });
+                const bosVerileri = denemelerSource.map(d => {
+                    const detay = d.detaylar.find(det => det.ders === dersAdi);
+                    return detay ? soruSayilari[dersAdi] - detay.dogru - detay.yanlis : soruSayilari[dersAdi];
+                });
+
+                const chartCanvas = document.createElement('canvas');
+                chartCanvas.id = 'singleDersChart';
+                elements.dersDetayAnalizContent.appendChild(chartCanvas);
+
+                const chartData = {
+                    labels: denemeAdlari,
+                    datasets: [
+                        { label: 'Doğru', data: dogruVerileri, backgroundColor: '#27ae60', stack: 'Stack 0' },
+                        { label: 'Yanlış', data: yanlisVerileri, backgroundColor: '#e74c3c', stack: 'Stack 0' },
+                        { label: 'Boş', data: bosVerileri, backgroundColor: '#95a5a6', stack: 'Stack 0' }
+                    ]
+                };
+
+                const chartConfig = {
+                    type: 'bar',
+                    data: chartData,
+                    options: {
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `${dersAdi} Dersi Analizi (${lastFive ? 'Son 5 Deneme' : 'Tüm Denemeler'})`
+                            }
+                        },
+                        responsive: true, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } }
+                    }
+                };
+                window.singleDersChartInstance = new Chart(chartCanvas.getContext('2d'), chartConfig);
+
+                const enCokYanlisKonular = {};
+                denemelerSource.forEach(deneme => {
+                    const detay = deneme.detaylar.find(d => d.ders === dersAdi);
+                    if (detay && detay.yanlislar) {
+                        detay.yanlislar.forEach(yanlis => {
+                            if (yanlis.konu) {
+                                const konu = yanlis.konu.trim();
+                                enCokYanlisKonular[konu] = (enCokYanlisKonular[konu] || 0) + 1;
+                            }
+                        });
+                    }
+                });
+                const sortedKonular = Object.entries(enCokYanlisKonular).sort(([, a], [, b]) => b - a);
+
+                let konularHtml = "";
+                if (sortedKonular.length > 0) {
+                    konularHtml = `<h4>En Çok Yanlış Yapılan Konular:</h4><ul>`;
+                    sortedKonular.forEach(([konu, sayi]) => {
+                        konularHtml += `<li>${konu} (${sayi} yanlış)</li>`;
+                    });
+                    konularHtml += `</ul>`;
+                } else {
+                    konularHtml = "<p>Bu derste yanlış yapılan bir konu bilgisi bulunamadı.</p>";
+                }
+                const konularDiv = document.createElement('div');
+                konularDiv.innerHTML = konularHtml;
+                elements.dersDetayAnalizContent.appendChild(konularDiv);
+            };
+
+            const openYanlislarModal = () => {
+                clearAllViews();
+                elements.yanlisModal.style.display = "flex";
+                showYanlisDenemeListesi(false, document.querySelector('#yanlisModal .filter-bar button'));
+            };
+            const closeYanlislarModal = () => {
+                elements.yanlisModal.style.display = "none";
+                renderAllComponents();
+            };
+            const showYanlisDenemeListesi = (lastFive = false, buttonEl = null) => {
+                 if (buttonEl) {
+                    const parent = buttonEl.parentElement;
+                    parent.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                    buttonEl.classList.add('active');
+                }
+
+                elements.yanlisDenemeListesi.style.display = "block";
+                elements.yanlisDetayContainer.style.display = "none";
+                elements.yanlisDenemeListesi.innerHTML = "";
+                
+                let denemelerWithYanlis = denemeler.filter(d => d.detaylar.some(detay => detay.yanlis > 0))
+                                                 .sort((a,b) => new Date(b.tarih) - new Date(a.tarih));
+                
+                if(lastFive) {
+                    denemelerWithYanlis = denemelerWithYanlis.slice(0, 5);
+                }
+
+                if (denemelerWithYanlis.length === 0) {
+                    elements.yanlisDenemeListesi.innerHTML = `<div class="uyari-mesaji">Tebrikler! Yanlış sorunuz olan bir deneme bulunmamaktadır.</div>`;
+                    return;
+                }
+                
+                denemelerWithYanlis.forEach(deneme => {
+                    const totalYanlis = deneme.detaylar.reduce((sum, item) => sum + Number(item.yanlis), 0);
+                    const div = document.createElement("div");
+                    div.classList.add("deneme-list-item");
+                    
+                    const linkContainer = document.createElement("div");
+                    linkContainer.classList.add("deneme-link-container");
+
+                    const a = document.createElement("a");
+                    a.classList.add("deneme-link");
+                    a.href = "#";
+                    a.onclick = () => {
+                        showDenemeYanlislari(deneme.id);
+                        return false;
+                    };
+                    a.textContent = deneme.ad;
+
+                     const tarihDiv = document.createElement("div");
+                    tarihDiv.classList.add("deneme-tarih");
+                    tarihDiv.textContent = formatDate(deneme.tarih);
+
+                    linkContainer.appendChild(a);
+                    linkContainer.appendChild(tarihDiv);
+
+                    const summarySpan = document.createElement("span");
+                    summarySpan.classList.add("deneme-summary");
+                    summarySpan.textContent = ` (${totalYanlis} yanlış)`;
+                    
+                    div.appendChild(linkContainer);
+                    div.appendChild(summarySpan);
+                    elements.yanlisDenemeListesi.appendChild(div);
+                });
+            };
+
+            const showDenemeYanlislari = (denemeId) => {
+                const deneme = denemeler.find(d => d.id === denemeId);
+                if (!deneme) return;
+
+                elements.yanlisDenemeListesi.style.display = "none";
+                elements.yanlisDetayContainer.style.display = "block";
+                elements.yanlisDenemeTitle.textContent = `${deneme.ad} - Yanlış Analizi`;
+                
+                let yanlislar = [];
+                deneme.detaylar.forEach(detay => {
+                    yanlislar.push(...(detay.yanlislar || []).map(y => ({
+                        ders: detay.ders,
+                        ...y
+                    })));
+                });
+                
+                if (yanlislar.length === 0) {
+                    elements.yanlisDetayTable.innerHTML = `<div class="uyari-mesaji">Bu denemede yanlış soru bulunmamaktadır.</div>`;
+                    elements.yanlisKonuAnalizi.innerHTML = "";
+                    return;
+                }
+
+                const konuAnalizi = {};
+                yanlislar.forEach(y => {
+                    if (y.konu) {
+                        const konu = y.konu.trim();
+                        konuAnalizi[konu] = (konuAnalizi[konu] || 0) + 1;
+                    }
+                });
+                const siraliKonular = Object.entries(konuAnalizi).sort(([,a], [,b]) => b - a);
+
+                let analizHtml = "<h4>Bu Denemede En Çok Yanlış Yapılan Konular:</h4><ul>";
+                if(siraliKonular.length > 0) {
+                    siraliKonular.slice(0, 3).forEach(([konu, sayi]) => {
+                        analizHtml += `<li><b>${konu}</b> (${sayi} yanlış)</li>`;
+                    });
+                } else {
+                    analizHtml = `<div class="uyari-mesaji">Bu deneme için yanlış konusu bilgisi girilmemiştir.</div>`;
+                }
+                analizHtml += "</ul>";
+                elements.yanlisKonuAnalizi.innerHTML = analizHtml;
+
+                let tableHtml = `
+                    <thead>
+                        <tr>
+                            <th>Ders</th>
+                            <th>Soru No</th>
+                            <th>Konu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                `;
+                yanlislar.forEach(y => {
+                    tableHtml += `<tr><td>${y.ders}</td><td>${y.soruNo}</td><td>${y.konu || "-"}</td></tr>`;
+                });
+                tableHtml += "</tbody>";
+                elements.yanlisDetayTable.innerHTML = tableHtml;
+            };
+
+
+            const updateYanlisTakibiButtonStatus = () => {
+                const totalUnsolved = Object.values(yanlisTakipData).flatMap(d => Object.values(d.dersler)).flatMap(d => d).filter(s => !s.cozuldu).length;
+                elements.yanlisTakibiBtn.textContent = `Yanlış Takibi`;
+                elements.yanlisTakibiBtn.classList.remove('yanlis-button-blink');
+                if (totalUnsolved > 0) {
+                    elements.yanlisTakibiBtn.classList.add('yanlis-button-blink');
+                    elements.yanlisTakibiBtn.textContent = `Yanlış Takibi (${totalUnsolved})`;
+                }
+            };
+            
+            const openYanlisTakipModal = () => {
+                clearAllViews();
+                elements.yanlisTakipModal.style.display = "flex";
+                syncYanlisTakipData();
+                switchYanlisTakipView('deneme');
+            };
+            
+            const switchYanlisTakipView = (view) => {
+                 if (view === 'deneme') {
+                    elements.yanlisTakipTabDeneme.classList.add('active');
+                    elements.yanlisTakipTabKonu.classList.remove('active');
+                    elements.yanlisTakipSoruListContainer.style.display = 'none';
+                    elements.yanlisTakipKonuOzetContainer.style.display = 'none';
+                    renderYanlisTakipDenemeList();
+                } else if (view === 'konu') {
+                    elements.yanlisTakipTabDeneme.classList.remove('active');
+                    elements.yanlisTakipTabKonu.classList.add('active');
+                    elements.yanlisTakipDenemeListContainer.style.display = 'none';
+                    elements.yanlisTakipSoruListContainer.style.display = 'none';
+                    elements.yanlisTakipKonuOzetContainer.style.display = 'block';
+                    renderYanlisTakipKonuOzet();
+                }
+            };
+            
+            const renderYanlisTakipKonuOzet = () => {
+                const unsolvedKonularByDers = {};
+                
+                Object.values(yanlisTakipData).forEach(deneme => {
+                    Object.entries(deneme.dersler).forEach(([dersAdi, sorular]) => {
+                         sorular.forEach(soru => {
+                            if (!soru.cozuldu && soru.konu) {
+                                if (!unsolvedKonularByDers[dersAdi]) {
+                                    unsolvedKonularByDers[dersAdi] = {};
+                                }
+                                const konu = soru.konu.trim();
+                                unsolvedKonularByDers[dersAdi][konu] = (unsolvedKonularByDers[dersAdi][konu] || 0) + 1;
+                            }
+                        });
+                    });
+                });
+                
+                elements.yanlisTakipKonuListesi.innerHTML = "";
+                const derslerListesi = Object.keys(unsolvedKonularByDers);
+
+                if (derslerListesi.length === 0) {
+                    elements.yanlisTakipKonuListesi.innerHTML = `<div class="uyari-mesaji">Harika! Tekrar etmeniz gereken bir konu bulunmamaktadır.</div>`;
+                    return;
+                }
+
+                let html = "";
+                derslerListesi.forEach(ders => {
+                    html += `<h4>${ders}</h4>`;
+                    const konular = unsolvedKonularByDers[ders];
+                    const sortedKonular = Object.entries(konular).sort(([, a], [, b]) => b - a);
+                    
+                    const konuListesiHtml = sortedKonular.map(([konu, sayi]) => 
+                        `<li class="yanlis-item" style="flex-direction: row; justify-content: space-between; align-items: center; padding: 0.8rem 1rem;">
+                            <strong>${konu}</strong> 
+                            <span style="color: var(--danger-btn-bg); font-weight: 600;">(${sayi} soru)</span>
+                        </li>`
+                    ).join('');
+
+                    html += `<ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">${konuListesiHtml}</ul>`;
+                });
+
+                elements.yanlisTakipKonuListesi.innerHTML = html;
+            };
+
+            const closeYanlisTakipModal = () => {
+                elements.yanlisTakipModal.style.display = "none";
+                elements.yanlisTakipDenemeListContainer.style.display = "block";
+                elements.yanlisTakipSoruListContainer.style.display = "none";
+                currentYanlisTakipDenemeId = null;
+                renderAllComponents();
+            };
+            
+            const renderYanlisTakipDenemeList = () => {
+                elements.yanlisTakipDenemeListContainer.style.display = "block";
+                elements.yanlisTakipSoruListContainer.style.display = "none";
+                elements.yanlisTakipDenemeListesi.innerHTML = "";
+
+                const denemelerWithYanlis = Object.entries(yanlisTakipData)
+                    .filter(([id, data]) => {
+                        const unresolvedCount = Object.values(data.dersler).flatMap(d => d).filter(s => !s.cozuldu).length;
+                        return unresolvedCount > 0;
+                    })
+                    .sort(([, a], [, b]) => new Date(b.tarih) - new Date(a.tarih));
+                
+                if (denemelerWithYanlis.length === 0) {
+                    elements.yanlisTakipDenemeListesi.innerHTML = `<div class="uyari-mesaji">Harika! Çözülmesi gereken yanlış sorunuz bulunmamaktadır.</div>`;
+                    return;
+                }
+
+                denemelerWithYanlis.forEach(([denemeId, data]) => {
+                    const yanlisSayisi = Object.values(data.dersler).flatMap(d => d).filter(s => !s.cozuldu).length;
+                    const li = document.createElement("li");
+                    const link = document.createElement("a");
+                    link.href = "#";
+                    link.classList.add("deneme-link-yanlis");
+                    link.innerHTML = `${data.ad} <small>(${formatDate(data.tarih)})</small> <span>(${yanlisSayisi} yanlış)</span>`;
+                    link.onclick = (e) => {
+                        e.preventDefault();
+                        currentYanlisTakipDenemeId = denemeId;
+                        elements.yanlisTakipShowAll.checked = false;
+                        showYanlisTakipSoruList(false);
+                    };
+                    li.appendChild(link);
+                    elements.yanlisTakipDenemeListesi.appendChild(li);
+                });
+            };
+
+            const showYanlisTakipSoruList = (showAll) => {
+                elements.yanlisTakipDenemeListContainer.style.display = "none";
+                elements.yanlisTakipKonuOzetContainer.style.display = 'none';
+                elements.yanlisTakipSoruListContainer.style.display = "block";
+                elements.yanlisTakipListesi.innerHTML = "";
+                elements.yanlisTakipShowAll.checked = showAll;
+
+                const denemeData = yanlisTakipData[currentYanlisTakipDenemeId];
+                if (!denemeData) {
+                    elements.yanlisTakipSoruListTitle.textContent = "Hata: Deneme verisi bulunamadı.";
+                    return;
+                }
+                
+                elements.yanlisTakipSoruListTitle.textContent = `${denemeData.ad} - Yanlış Soru Takibi`;
+
+                let yanlislarListesiHtml = "";
+                let hasYanlis = false;
+                
+                dersler.forEach(ders => {
+                    const dersYanlislari = denemeData.dersler[ders] || [];
+                    if (dersYanlislari.length > 0) {
+                        const filteredYanlislar = showAll ? dersYanlislari : dersYanlislari.filter(y => !y.cozuldu);
+                        if (filteredYanlislar.length > 0) {
+                            hasYanlis = true;
+                            yanlislarListesiHtml += `<h4>${ders}</h4>`;
+                            const soruListesiHtml = filteredYanlislar.map(yanlis => {
+                                const checked = yanlis.cozuldu ? 'checked' : '';
+                                const solvedClass = yanlis.cozuldu ? 'solved' : '';
+                                return `
+                                    <li class="yanlis-item ${solvedClass}">
+                                        <div class="yanlis-item-header">
+                                            <span>Soru: ${yanlis.soruNo}</span>
+                                            <span>Konu: ${yanlis.konu || 'Bilinmiyor'}</span>
+                                            <div class="yanlis-actions">
+                                                <label>
+                                                    <input type="checkbox" ${checked} onchange="app.toggleYanlisTakipSoruStatus('${currentYanlisTakipDenemeId}', '${ders}', '${yanlis.soruNo}', this.checked)"/>
+                                                    <span>Çözüldü</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </li>
+                                `;
+                            }).join('');
+                            yanlislarListesiHtml += `<ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">${soruListesiHtml}</ul>`;
+                        }
+                    }
+                });
+
+                if (!hasYanlis) {
+                    const message = showAll ? "Bu denemede hiç yanlış soru kaydedilmemiş." : "Bu denemede çözülmesi gereken yanlış soru bulunmamaktadır.";
+                    yanlislarListesiHtml = `<div class="uyari-mesaji">${message}</div>`;
+                }
+
+                elements.yanlisTakipListesi.innerHTML = yanlislarListesiHtml;
+            };
+
+            const toggleYanlisTakipSoruStatus = async (denemeId, ders, soruNo, isChecked) => {
+                const denemeData = yanlisTakipData[denemeId];
+                if (denemeData && denemeData.dersler[ders]) {
+                    const soru = denemeData.dersler[ders].find(s => s.soruNo == soruNo);
+                    if (soru) {
+                        soru.cozuldu = isChecked;
+                        await saveToRemote();
+                        showYanlisTakipSoruList(elements.yanlisTakipShowAll.checked);
+                        updateYanlisTakibiButtonStatus();
+                    }
+                }
+            };
+            
+            const openKarsilastirmaModal = () => {
+                clearAllViews();
+                elements.karsilastirmaModal.style.display = "flex";
+                renderDenemeSecimList();
+                elements.karsilastirmaSonucContainer.innerHTML = "";
+            };
+            const closeKarsilastirmaModal = () => {
+                elements.karsilastirmaModal.style.display = "none";
+                renderAllComponents();
+            };
+            const renderDenemeSecimList = () => {
+                elements.denemeSecimList.innerHTML = "";
+                if(denemeler.length < 2) {
+                    elements.denemeSecimList.innerHTML = `<div class="uyari-mesaji" style="width:100%;">En az 2 deneme ekleyerek karşılaştırma yapabilirsiniz.</div>`;
+                    return;
+                }
+                const sortedDenemeler = [...denemeler].sort((a,b) => new Date(b.tarih) - new Date(a.tarih));
+                sortedDenemeler.forEach(deneme => {
+                    const label = document.createElement("label");
+                    label.innerHTML = `<input type="checkbox" name="denemeSecim" value="${deneme.id}">${deneme.ad} (${formatDate(deneme.tarih)})`;
+                    elements.denemeSecimList.appendChild(label);
+                });
+            };
+            const compareSelectedDenemeler = () => {
+                const selectedIds = Array.from(document.querySelectorAll('#denemeSecimList input:checked')).map(cb => Number(cb.value));
+                if (selectedIds.length < 2) {
+                    alert("Karşılaştırma için en az iki deneme seçmelisiniz.");
+                    return;
+                }
+                const selectedDenemeler = denemeler.filter(d => selectedIds.includes(d.id))
+                                                   .sort((a,b) => new Date(a.tarih) - new Date(b.tarih));
+
+                let tableHtml = `<h3>Seçilen Denemelerin Karşılaştırması</h3>`;
+                tableHtml += `<table><thead><tr><th>Ders</th>`;
+                selectedDenemeler.forEach(d => tableHtml += `<th>${d.ad}</th>`);
+                tableHtml += `</tr></thead><tbody>`;
+
+                let totalDogru = {};
+                let totalYanlis = {};
+                
+                dersler.forEach(ders => {
+                    tableHtml += `<tr><td>${ders}</td>`;
+                    selectedDenemeler.forEach(d => {
+                        const detay = d.detaylar.find(det => det.ders === ders);
+                        const dogru = detay ? detay.dogru : 0;
+                        const yanlis = detay ? detay.yanlis : 0;
+                        tableHtml += `<td>D: ${dogru}<br>Y: ${yanlis}</td>`;
+                        totalDogru[d.id] = (totalDogru[d.id] || 0) + dogru;
+                        totalYanlis[d.id] = (totalYanlis[d.id] || 0) + yanlis;
+                    });
+                    tableHtml += `</tr>`;
+                });
+
+                tableHtml += `<tr style="font-weight:bold; background-color: var(--table-row-bg);"><td>TOPLAM</td>`;
+                selectedDenemeler.forEach(d => {
+                    tableHtml += `<td>D: ${totalDogru[d.id] || 0}<br>Y: ${totalYanlis[d.id] || 0}</td>`;
+                });
+                tableHtml += `</tr>`;
+                
+                tableHtml += `<tr style="font-weight:bold; background-color: var(--table-row-bg);"><td>NET</td>`;
+                selectedDenemeler.forEach(d => {
+                    const net = (totalDogru[d.id] || 0) - (totalYanlis[d.id] || 0) / 4;
+                    tableHtml += `<td>${net.toFixed(2)}</td>`;
+                });
+                tableHtml += `</tr>`;
+
+                tableHtml += `</tbody></table>`;
+                elements.karsilastirmaSonucContainer.innerHTML = tableHtml;
+            };
+
+            const openSistemOnerileri = () => {
+                clearAllViews();
+                elements.sistemOnerileriModal.style.display = "flex";
+                renderSistemOnerileri();
+            };
+            const closeSistemOnerileriModal = () => {
+                elements.sistemOnerileriModal.style.display = "none";
+                renderAllComponents();
+            };
+            const renderSistemOnerileri = () => {
+                elements.sistemOnerileriContent.innerHTML = "<h3>Analiz ve Öneriler Oluşturuluyor...</h3>";
+                if (denemeler.length === 0) {
+                    elements.sistemOnerileriContent.innerHTML = `<div class="uyari-mesaji">Öneri oluşturmak için en az bir deneme verisi ekleyin.</div>`;
+                    return;
+                }
+                
+                const tumYanlisKonular = {};
+                let tumYanlisSayisi = 0;
+                let tumDogruSayisi = 0;
+                
+                denemeler.forEach(deneme => {
+                    deneme.detaylar.forEach(detay => {
+                        tumDogruSayisi += Number(detay.dogru);
+                        tumYanlisSayisi += Number(detay.yanlis);
+                        if (detay.yanlislar) {
+                            detay.yanlislar.forEach(yanlis => {
+                                if (yanlis.konu) {
+                                    const konu = yanlis.konu.trim();
+                                    tumYanlisKonular[konu] = (tumYanlisKonular[konu] || 0) + 1;
+                                }
+                            });
+                        }
+                    });
+                });
+                
+                const toplamSoru = Object.values(soruSayilari).reduce((sum, val) => sum + val, 0) * denemeler.length;
+                const basariOrani = toplamSoru > 0 ? ((tumDogruSayisi / toplamSoru) * 100).toFixed(2) : 0;
+                const siraliKonular = Object.entries(tumYanlisKonular).sort(([, a], [, b]) => b - a);
+
+                let öneriHtml = `
+                    <h3>Genel Performans Analizi</h3>
+                    <table>
+                        <thead><tr><th>Parametre</th><th>Değer</th></tr></thead>
+                        <tbody>
+                            <tr><td>Toplam Deneme Sayısı</td><td>${denemeler.length}</td></tr>
+                            <tr><td>Toplam Doğru Sayısı</td><td>${tumDogruSayisi}</td></tr>
+                            <tr><td>Toplam Yanlış Sayısı</td><td>${tumYanlisSayisi}</td></tr>
+                            <tr><td>Genel Başarı Oranı</td><td>%${basariOrani}</td></tr>
+                        </tbody>
+                    </table>
+                `;
+                öneriHtml += `<div class="öneri-kutu"><h4>Sistem Önerileri</h4>`;
+                if (siraliKonular.length > 0) {
+                    öneriHtml += `
+                        <p>En çok yanlış yaptığınız konulara odaklanmanız, netlerinizi artırmanız için kritik öneme sahiptir.</p>
+                        <ul>
+                            <li>**Top 3 En Çok Yanlış Yapılan Konular:**
+                                <ul>
+                                    ${siraliKonular.slice(0, 3).map(([konu, sayi]) => `<li><b>${konu}</b> (${sayi} yanlış): Bu konulardaki eksiklerinizi tamamlamak için konu tekrarı ve bol soru çözümü yapın.</li>`).join('')}
+                                </ul>
+                            </li>
+                        </ul>
+                    `;
+                } else {
+                    öneriHtml += `<p>Henüz yanlış yaptığınız konulara ilişkin yeterli veri bulunamadığından kişiselleştirilmiş bir öneri sunamıyorum. Deneme verisi girmeye devam edin.</p>`;
+                }
+                öneriHtml += `</div>`;
+                elements.sistemOnerileriContent.innerHTML = öneriHtml;
+            };
+
+            // --- Kronometre Fonksiyonları ---
+            const openStopwatch = () => {
+                clearAllViews();
+                elements.stopwatchContainer.style.display = "flex";
+                renderSavedTimes();
+            };
+
+            const closeStopwatch = () => {
+                elements.stopwatchContainer.style.display = "none";
+                 if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                 }
+                renderAllComponents();
+            };
+
+            const updateStopwatchDisplay = () => {
+                const totalSeconds = Math.floor(elapsedTime / 1000);
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
+                elements.stopwatchDisplay.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            };
+
+            const startStopwatch = () => {
+                if (isRunning) {
+                    isRunning = false;
+                    clearInterval(timer);
+                    elements.startStopBtn.textContent = "Başlat";
+                    elements.startStopBtn.classList.remove("danger");
+                    elements.startStopBtn.classList.add("primary");
+                } else {
+                    isRunning = true;
+                    startTime = Date.now() - elapsedTime;
+                    timer = setInterval(() => {
+                        elapsedTime = Date.now() - startTime;
+                        updateStopwatchDisplay();
+                    }, 1000);
+                    elements.startStopBtn.textContent = "Durdur";
+                    elements.startStopBtn.classList.remove("primary");
+                    elements.startStopBtn.classList.add("danger");
+                }
+            };
+            
+            const resetStopwatch = () => {
+                clearInterval(timer);
+                isRunning = false;
+                elapsedTime = 0;
+                updateStopwatchDisplay();
+                elements.startStopBtn.textContent = "Başlat";
+                elements.startStopBtn.classList.remove("danger");
+                elements.startStopBtn.classList.add("primary");
+            };
+
+            const saveStopwatchTime = async () => {
+                if (elapsedTime > 0) {
+                    const savedTime = {
+                        id: Date.now(),
+                        date: new Date().toLocaleDateString('tr-TR'),
+                        time: elements.stopwatchDisplay.textContent
+                    };
+                    stopwatchTimes.push(savedTime);
+                    stopwatchTimes.sort((a,b) => b.id - a.id);
+                    await saveToRemote();
+                    renderSavedTimes();
+                    resetStopwatch();
+                }
+            };
+
+            const renderSavedTimes = () => {
+                elements.savedTimesList.innerHTML = "";
+                if (stopwatchTimes.length === 0) {
+                    elements.savedTimesList.innerHTML = "<li style='text-align: center; color: #888;'>Henüz kaydedilmiş süre yok.</li>";
+                    return;
+                }
+                stopwatchTimes.forEach(item => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `
+                        <span>${item.date} - ${item.time}</span>
+                        <button class="danger" onclick="app.deleteSavedTime(${item.id})">Sil</button>
+                    `;
+                    elements.savedTimesList.appendChild(li);
+                });
+            };
+
+            const deleteSavedTime = async (id) => {
+                if (confirm("Bu süreyi silmek istediğinize emin misiniz?")) {
+                    stopwatchTimes = stopwatchTimes.filter(item => item.id !== id);
+                    await saveToRemote();
+                    renderSavedTimes();
+                }
+            };
+
+            const toggleFullscreen = () => {
+                if (!document.fullscreenElement) {
+                    elements.stopwatchContainer.requestFullscreen().catch(err => {
+                        alert(`Hata: Tam ekrana geçilemedi: ${err.message}`);
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            };
+            
+            const handleFullscreenChange = () => {
+                 if (document.fullscreenElement === elements.stopwatchContainer) {
+                    elements.stopwatchContainer.classList.add("focus-mode");
+                    elements.fullscreenButton.innerHTML = "&#x2715;"; // Kapatma simgesi
+                 } else {
+                    elements.stopwatchContainer.classList.remove("focus-mode");
+                    elements.fullscreenButton.innerHTML = "&#x26F6;"; // Tam ekran simgesi
+                 }
+            };
+            
+            const init = async () => {
+                await loadFromRemote();
+                // Geriye dönük uyumluluk
+                denemeler.forEach(d => {
+                    if (!d.tarih) {
+                        d.tarih = new Date(d.id).toISOString().split('T')[0];
+                    }
+                });
+                syncYanlisTakipData();
+                renderAllComponents();
+                document.addEventListener('fullscreenchange', handleFullscreenChange);
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                     document.body.classList.add("dark-mode");
+                }
+            };
+
+            return {
+                openModal, closeModal, openYanlislarModal, closeYanlislarModal,
+                openDersAnaliz, closeDersAnalizModal, openKarsilastirmaModal, closeKarsilastirmaModal,
+                openSistemOnerileri, closeSistemOnerileriModal, exportData, importData,
+                renderAllComponents, renderDenemeList, renderProgressChart, showDenemeDetails,
+                updateYanlis, renderDersDetayAnaliz, compareSelectedDenemeler,
+                openYanlisTakipModal, closeYanlisTakipModal, renderYanlisTakipDenemeList,
+                showYanlisTakipSoruList, toggleYanlisTakipSoruStatus, switchYanlisTakipView,
+                showYanlisDenemeListesi, showDenemeYanlislari, filterDersAnalizi,
+                openStopwatch, closeStopwatch, startStopwatch, resetStopwatch, saveStopwatchTime,
+                deleteSavedTime, renderSavedTimes, toggleFullscreen, toggleTheme,
+                init
+            };
+        })();
+
+        document.addEventListener("DOMContentLoaded", app.init);
+    </script>
+</body>
+</html>
