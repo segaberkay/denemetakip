@@ -953,262 +953,90 @@
             <div id="sistemOnerileriContent"></div>
         </div>
     </div>
-
     <button id="themeToggle" class="secondary" onclick="app.toggleTheme()">Temayı Değiştir</button>
-    
+
+
     <script>
         const app = (() => {
             // Sizin JSONBin.io bilgileriniz buraya gelecek
             // Lütfen aşağıdaki değerleri kendi Bin ID'niz ve Private Key'inizle değiştirin.
             const BIN_ID = '68910c69f7e7a370d1f3c646';
-           const PRIVATE_KEY = '$2a$10$JaVVOpnQxhBYRGTV7qP5HunHRXMSinrOLKOyMdqSzOfmX58BUSrwm';
-            const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+            const PRIVATE_KEY = '$2a$10$JaVVOpnQxhBYRGTV7qP5HunHRXMSinrOLKOyMdqSzOfmX58BUSrwm';
 
-            // Aşağıdaki değişkenler uygulamanın durumunu ve verilerini tutar.
+            // Sabitler
+            const soruSayilari = {
+                "Türkçe": 6, "Matematik": 6, "Tarih": 6, "İnkılap": 6, "Vatandaşlık": 6,
+                "Anayasa Hukuku": 6, "İdare Hukuku": 6, "İdari Yargılama Usulü": 6, "Hukuk Yargılama Usulü": 6,
+                "Medeni Hukuk": 6, "Milletlerarası Özel Hukuku": 5,
+                "Borçlar Hukuku": 6, "Ceza Hukuku": 6, "Ceza Yargılama Usulü": 6,
+                "Ticaret Hukuku": 6, "İcra ve İflas Hukuku": 6, "İş Hukuku": 5
+            };
+            const dersler = Object.keys(soruSayilari);
+
+            // Elemanlar
+            const elements = {
+                mainContainer: document.getElementById("mainContainer"),
+                stopwatchContainer: document.getElementById("stopwatchContainer"),
+                stopwatchDisplay: document.getElementById("stopwatchDisplay"),
+                startStopBtn: document.getElementById("startStopBtn"),
+                savedTimesList: document.getElementById("savedTimesList"),
+                modal: document.getElementById("modal"),
+                yanlisModal: document.getElementById("yanlisModal"),
+                yanlislarContent: document.getElementById("yanlislarContent"),
+                yanlisDenemeListesi: document.getElementById("yanlisDenemeListesi"),
+                yanlisDetayContainer: document.getElementById("yanlisDetayContainer"),
+                yanlisDenemeTitle: document.getElementById("yanlisDenemeTitle"),
+                yanlisKonuAnalizi: document.getElementById("yanlisKonuAnalizi"),
+                yanlisDetayTable: document.getElementById("yanlisDetayTable"),
+                dersInputs: document.getElementById("dersInputs"),
+                denemeForm: document.getElementById("denemeForm"),
+                denemeNotu: document.getElementById("denemeNotu"),
+                tableBody: document.querySelector("#denemeTable tbody"),
+                denemeListesiEl: document.getElementById("denemeListesi"),
+                denemeTable: document.getElementById("denemeTable"),
+                dersAnalizModal: document.getElementById("dersAnalizModal"),
+                dersListForAnalysis: document.getElementById("dersListForAnalysis"),
+                dersDetayAnalizContent: document.getElementById("dersDetayAnalizContent"),
+                progressChartCtx: document.getElementById("progressChart").getContext("2d"),
+                buttonBarButtons: document.querySelectorAll('#buttonBar button'),
+                karsilastirmaModal: document.getElementById("karsilastirmaModal"),
+                denemeSecimList: document.getElementById("denemeSecimList"),
+                karsilastirmaSonucContainer: document.getElementById("karsilastirmaSonucContainer"),
+                sistemOnerileriModal: document.getElementById("sistemOnerileriModal"),
+                sistemOnerileriContent: document.getElementById("sistemOnerileriContent"),
+                yanlisTakipModal: document.getElementById("yanlisTakipModal"),
+                yanlisTakipDenemeListesi: document.getElementById("yanlisTakipDenemeListesi"),
+                yanlisTakipKonuOzetContainer: document.getElementById("yanlisTakipKonuOzetContainer"),
+                yanlisTakipKonuListesi: document.getElementById("yanlisTakipKonuListesi"),
+                yanlisTakipDenemeListContainer: document.getElementById("yanlisTakipDenemeListContainer"),
+                yanlisTakipSoruListContainer: document.getElementById("yanlisTakipSoruListContainer"),
+                yanlisTakipSoruListTitle: document.getElementById("yanlisTakipSoruListTitle"),
+                yanlisTakipListesi: document.getElementById("yanlisTakipListesi"),
+                yanlisTakipShowAll: document.getElementById("yanlisTakipShowAll"),
+                yanlisTakibiBtn: document.getElementById("yanlisTakibiBtn"),
+                denemeNoteDiv: document.querySelector('.deneme-note'),
+                fullscreenButton: document.getElementById("fullscreenButton"),
+                yanlisTakipTabDeneme: document.getElementById("yanlisTakipTabDeneme"),
+                yanlisTakipTabKonu: document.getElementById("yanlisTakipTabKonu"),
+            };
+            // Değişkenler
             let denemeler = [];
             let yanlisTakipData = {};
             let dersKonulari = {};
             let stopwatchTimes = [];
             let aktifDeneme = null;
             let aktifDersAnaliz = null;
-            let currentYanlisTakipDenemeId = null;
-            let stopwatchInterval = null;
-            let startTime = 0;
-            let elapsedTime = 0;
-            let isRunning = false;
-
-            // DOM Elementleri
-            const elements = {
-                mainContainer: document.getElementById("mainContainer"),
-                stopwatchContainer: document.getElementById("stopwatchContainer"),
-                modal: document.getElementById("modal"),
-                yanlisModal: document.getElementById("yanlisModal"),
-                yanlisTakipModal: document.getElementById("yanlisTakipModal"),
-                dersAnalizModal: document.getElementById("dersAnalizModal"),
-                karsilastirmaModal: document.getElementById("karsilastirmaModal"),
-                sistemOnerileriModal: document.getElementById("sistemOnerileriModal"),
-                denemeForm: document.getElementById("denemeForm"),
-                dersInputsDiv: document.getElementById("dersInputs"),
-                denemeNotu: document.getElementById("denemeNotu"),
-                denemeListesiEl: document.getElementById("denemeListesi"),
-                denemeTable: document.getElementById("denemeTable"),
-                denemeTableBody: document.querySelector("#denemeTable tbody"),
-                denemeNoteDiv: document.querySelector(".deneme-note"),
-                progressChartCtx: document.getElementById("progressChart").getContext('2d'),
-                dersListForAnalysis: document.getElementById("dersListForAnalysis"),
-                dersDetayAnalizContent: document.getElementById("dersDetayAnalizContent"),
-                yanlisDenemeListesi: document.getElementById("yanlisDenemeListesi"),
-                yanlisDetayContainer: document.getElementById("yanlisDetayContainer"),
-                yanlisDetayTable: document.getElementById("yanlisDetayTable"),
-                yanlisKonuAnalizi: document.getElementById("yanlisKonuAnalizi"),
-                yanlisTakibiBtn: document.getElementById("yanlisTakibiBtn"),
-                yanlisTakipDenemeListesi: document.getElementById("yanlisTakipDenemeListesi"),
-                yanlisTakipKonuOzetContainer: document.getElementById("yanlisTakipKonuOzetContainer"),
-                yanlisTakipKonuListesi: document.getElementById("yanlisTakipKonuListesi"),
-                yanlisTakipSoruListContainer: document.getElementById("yanlisTakipSoruListContainer"),
-                yanlisTakipSoruListTitle: document.getElementById("yanlisTakipSoruListTitle"),
-                yanlisTakipListesi: document.getElementById("yanlisTakipListesi"),
-                yanlisTakipShowAll: document.getElementById("yanlisTakipShowAll"),
-                yanlisTakipTabDeneme: document.getElementById("yanlisTakipTabDeneme"),
-                yanlisTakipTabKonu: document.getElementById("yanlisTakipTabKonu"),
-                denemeSecimList: document.getElementById("denemeSecimList"),
-                karsilastirmaSonucContainer: document.getElementById("karsilastirmaSonucContainer"),
-                sistemOnerileriContent: document.getElementById("sistemOnerileriContent"),
-                stopwatchDisplay: document.getElementById("stopwatchDisplay"),
-                startStopBtn: document.getElementById("startStopBtn"),
-                savedTimesList: document.getElementById("savedTimesList"),
-                buttonBarButtons: document.querySelectorAll('#buttonBar button')
-            };
-
-            // Deneme yapısının çekirdeği: Dersler ve Soru Sayıları
-            const dersler = [
-                "Anayasa Hukuku", "İdare Hukuku", "Ceza Hukuku Genel Hükümler", "Ceza Hukuku Özel Hükümler",
-                "Medeni Hukuk", "Borçlar Hukuku Genel Hükümler", "Borçlar Hukuku Özel Hükümler",
-                "Ticaret Hukuku", "İcra ve İflas Hukuku", 
-                "Milletlerarası Hukuk", // Soru sayısı 6'dan 5'e düşürüldü
-                "Tarih" // Yeni eklenen ders
-            ];
-
-            const soruSayilari = {
-                "Anayasa Hukuku": 6,
-                "İdare Hukuku": 6,
-                "Ceza Hukuku Genel Hükümler": 5,
-                "Ceza Hukuku Özel Hükümler": 5,
-                "Medeni Hukuk": 6,
-                "Borçlar Hukuku Genel Hükümler": 5,
-                "Borçlar Hukuku Özel Hükümler": 5,
-                "Ticaret Hukuku": 6,
-                "İcra ve İflas Hukuku": 6,
-                "Milletlerarası Hukuk": 5, // İstenen değişiklik yapıldı
-                "Tarih": 6 // Yeni eklenen dersin soru sayısı
-                // "Vergi Hukuku" ve "Felsefe" gibi dersler listeden çıkarıldı
-            };
-
             let progressChart = null;
+            window.singleDersChartInstance = null;
+            let currentYanlisTakipDenemeId = null;
 
-            // --- API ve Veri Yönetimi Fonksiyonları ---
-            const saveToRemote = async () => {
-                const combinedData = {
-                    denemeler: denemeler,
-                    yanlisTakipData: yanlisTakipData,
-                    dersKonulari: dersKonulari,
-                    stopwatchTimes: stopwatchTimes,
-                };
-                const url = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-                try {
-                    const response = await fetch(url, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Master-Key': PRIVATE_KEY,
-                            'Content-Length': JSON.stringify(combinedData).length,
-                        },
-                        body: JSON.stringify(combinedData)
-                    });
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error("Veri kaydetme hatası:", response.status, errorText);
-                        // alert("Veri kaydetme hatası oluştu: " + response.status);
-                        return false;
-                    }
-                    // console.log("Veri başarıyla kaydedildi.");
-                    return true;
-                } catch (error) {
-                    console.error("Veri kaydetme sırasında hata:", error);
-                    // alert("Veri kaydetme sırasında ağ hatası oluştu.");
-                    return false;
-                }
-            };
+            // Kronometre değişkenleri
+            let timer;
+            let isRunning = false;
+            let startTime;
+            let elapsedTime = 0;
 
-            const loadFromRemote = async () => {
-                try {
-                    const response = await fetch(API_URL + '/latest', {
-                        headers: {
-                            'X-Master-Key': PRIVATE_KEY,
-                            'X-Bin-Meta': false
-                        }
-                    });
-                    if (response.ok) {
-                        const data = await response.json();
-                        denemeler = data.denemeler || [];
-                        yanlisTakipData = data.yanlisTakipData || {};
-                        dersKonulari = data.dersKonulari || {};
-                        stopwatchTimes = data.stopwatchTimes || [];
-                        // console.log("Veriler başarıyla yüklendi.");
-                    } else {
-                        // console.log("İlk yüklemede veri bulunamadı veya hata oluştu, boş veri seti kullanılıyor.");
-                        // Yeni bir bin oluşturulması gerekebilir, ancak bu, uygulamanın
-                        // ilk kez çalıştırıldığı varsayımıyla devam etmesini sağlar.
-                    }
-                } catch (error) {
-                    console.error("Veri yükleme sırasında hata:", error);
-                }
-            };
-            
-            // Mevcut denemelerdeki yanlışların takip verisiyle senkronizasyonunu sağlar
-            const syncYanlisTakipData = () => {
-                const yeniYanlisTakipData = {};
-                
-                // Sadece mevcut dersleri (Tarih dahil) koru
-                const gecerliDersler = dersler;
-
-                denemeler.forEach(deneme => {
-                    const denemeId = deneme.id;
-                    yeniYanlisTakipData[denemeId] = {
-                        ad: deneme.ad,
-                        tarih: deneme.tarih,
-                        dersler: {}
-                    };
-
-                    deneme.detaylar.forEach(detay => {
-                        const ders = detay.ders;
-                        
-                        // Sadece geçerli dersleri ve Tarih hariç olanları işle
-                        if (!gecerliDersler.includes(ders)) return;
-
-                        if (detay.yanlis > 0 && detay.yanlisDetay) {
-                            const eskiYanlislar = yanlisTakipData[denemeId]?.dersler[ders] || [];
-
-                            yeniYanlisTakipData[denemeId].dersler[ders] = detay.yanlisDetay.map(yanlis => {
-                                // Eski verideki çözüldü durumunu koru (Soru No ve Konu bazında)
-                                const eskiSoru = eskiYanlislar.find(s => s.soruNo == yanlis.soruNo);
-                                
-                                // Yeni verideki soru numarasını, konusunu ve çözüldü durumunu ata
-                                return {
-                                    soruNo: yanlis.soruNo,
-                                    konu: yanlis.konu,
-                                    cozuldu: eskiSoru ? eskiSoru.cozuldu : false
-                                };
-                            });
-                        }
-                    });
-                });
-                
-                // Eski verideki çözüldü bilgileri korundu, artık yeni veriyi ata
-                yanlisTakipData = yeniYanlisTakipData;
-            };
-
-
-            // --- İçe/Dışa Aktarma Fonksiyonları ---
-            const exportData = () => {
-                const combinedData = {
-                    denemeler: denemeler,
-                    yanlisTakipData: yanlisTakipData,
-                    dersKonulari: dersKonulari,
-                    stopwatchTimes: stopwatchTimes
-                };
-                const dataStr = JSON.stringify(combinedData, null, 2);
-                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-                const exportFileDefaultName = 'deneme-verileri.json';
-
-                const linkElement = document.createElement('a');
-                linkElement.setAttribute('href', dataUri);
-                linkElement.setAttribute('download', exportFileDefaultName);
-                document.body.appendChild(linkElement);
-                linkElement.click();
-                document.body.removeChild(linkElement);
-            };
-
-            const importData = (event) => {
-                const file = event.target.files[0];
-                if (!file) {
-                    return;
-                }
-
-                const reader = new FileReader();
-                reader.onload = async (e) => {
-                    try {
-                        const importedData = JSON.parse(e.target.result);
-                        if (importedData && Array.isArray(importedData.denemeler)) {
-                            if (confirm("Mevcut veriler silinip, yeni verilerle değiştirilecektir. Emin misiniz?")) {
-                                denemeler = importedData.denemeler;
-                                // Geriye dönük uyumluluk: Eski verilerde tarih yoksa, id'den (timestamp) oluştur.
-                                denemeler.forEach(d => {
-                                    if (!d.tarih) {
-                                        d.tarih = new Date(d.id).toISOString().split('T')[0];
-                                    }
-                                });
-                                yanlisTakipData = importedData.yanlisTakipData || {};
-                                dersKonulari = importedData.dersKonulari || {};
-                                stopwatchTimes = importedData.stopwatchTimes || [];
-                                
-                                syncYanlisTakipData(); // Yeni ders yapısına göre senkronize et
-                                await saveToRemote();
-                                renderAllComponents();
-                                alert("Veriler başarıyla içe aktarıldı ve kaydedildi.");
-                            }
-                        } else {
-                            alert("Hata: Geçersiz veya bozuk dosya formatı.");
-                        }
-                    } catch (error) {
-                        console.error("İçe aktarma hatası:", error);
-                        alert("Hata: Dosya işlenirken bir sorun oluştu.");
-                    }
-                };
-                reader.readAsText(file);
-            };
-
-            // --- Modal ve Görünüm Fonksiyonları ---
+            // --- Temel Fonksiyonlar ---
             const clearAllViews = () => {
                 elements.mainContainer.style.display = "none";
                 elements.stopwatchContainer.style.display = "none";
@@ -1228,7 +1056,7 @@
                 }
                 elements.buttonBarButtons.forEach(btn => btn.classList.remove('active-menu-btn'));
             };
-            
+
             const renderAllComponents = () => {
                 clearAllViews();
                 elements.mainContainer.style.display = "flex";
@@ -1240,7 +1068,7 @@
             const toggleTheme = () => {
                 document.body.classList.toggle("dark-mode");
             };
-
+            
             const formatDate = (dateString) => {
                 if (!dateString) return '';
                 const date = new Date(dateString);
@@ -1250,90 +1078,210 @@
                 return correctedDate.toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' });
             };
 
-            // --- Deneme Ekleme/Düzenleme ---
-            const openModal = (denemeId = null) => {
-                clearAllViews();
-                elements.modal.style.display = "flex";
-                
-                // Formu temizle
-                elements.denemeForm.reset();
-                elements.dersInputsDiv.innerHTML = "";
-                elements.denemeForm.dataset.denemeId = "";
-
-                if (denemeId) {
-                    const deneme = denemeler.find(d => d.id === denemeId);
-                    if (deneme) {
-                        document.getElementById("denemeAdi").value = deneme.ad;
-                        document.getElementById("denemeTarihi").value = deneme.tarih || "";
-                        elements.denemeNotu.value = deneme.note || "";
-                        elements.denemeForm.dataset.denemeId = denemeId;
-                        
-                        // Ders detaylarını doldur
-                        createDersInputs(deneme.detaylar);
+            // --- Veri Yönetimi ---
+            const saveToRemote = async () => {
+                const combinedData = {
+                    denemeler: denemeler,
+                    yanlisTakipData: yanlisTakipData,
+                    dersKonulari: dersKonulari,
+                    stopwatchTimes: stopwatchTimes,
+                };
+                const url = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+                try {
+                    const response = await fetch(url, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Master-Key': PRIVATE_KEY,
+                            'X-Bin-Versioning': false
+                        },
+                        body: JSON.stringify(combinedData)
+                    });
+                    if (!response.ok) {
+                        throw new Error(`Veri kaydedilirken hata oluştu: ${response.statusText}`);
                     }
-                } else {
-                    // Yeni deneme için boş inputları oluştur
-                    createDersInputs();
+                    console.log("Veriler JSONBin.io'ya başarıyla kaydedildi.");
+                } catch (e) {
+                    console.error("Veri kaydetme hatası:", e);
+                    alert("Veriler kaydedilirken bir sorun oluştu. İnternet bağlantınızı kontrol edin veya lütfen daha sonra tekrar deneyin.");
                 }
+            };
+
+            const loadFromRemote = async () => {
+                const url = `https://api.jsonbin.io/v3/b/${BIN_ID}/latest`;
+                try {
+                    const response = await fetch(url, {
+                        headers: {
+                            'X-Master-Key': PRIVATE_KEY
+                        }
+                    });
+                    if (!response.ok) {
+                        throw new Error(`Veri yüklenirken hata oluştu: ${response.statusText}`);
+                    }
+                    const { record } = await response.json();
+                    denemeler = record.denemeler || [];
+                    yanlisTakipData = record.yanlisTakipData || {};
+                    dersKonulari = record.dersKonulari || {};
+                    stopwatchTimes = record.stopwatchTimes || [];
+                    console.log("Veriler JSONBin.io'dan başarıyla yüklendi.");
+                } catch (e) {
+                    console.error("Veri yükleme hatası:", e);
+                    alert("Verileriniz yüklenirken bir sorun oluştu. JSONBin.io ayarlarınızı veya internet bağlantınızı kontrol edin.");
+                    denemeler = [];
+                    yanlisTakipData = {};
+                    dersKonulari = {};
+                    stopwatchTimes = [];
+                }
+            };
+            
+            const syncYanlisTakipData = () => {
+                const yeniYanlisTakipData = {};
+                denemeler.forEach(deneme => {
+                    const denemeId = deneme.id;
+                    yeniYanlisTakipData[denemeId] = {
+                        ad: deneme.ad,
+                        tarih: deneme.tarih,
+                        dersler: {}
+                    };
+                    deneme.detaylar.forEach(detay => {
+                        if (detay.yanlislar && detay.yanlislar.length > 0) {
+                            yeniYanlisTakipData[denemeId].dersler[detay.ders] = detay.yanlislar.map(yanlis => {
+                                const eskiSoru = yanlisTakipData[denemeId]?.dersler[detay.ders]?.find(s => s.soruNo == yanlis.soruNo);
+                                return {
+                                    soruNo: yanlis.soruNo,
+                                    konu: yanlis.konu,
+                                    cozuldu: eskiSoru ? eskiSoru.cozuldu : false
+                                };
+                            });
+                        }
+                    });
+                });
+                yanlisTakipData = yeniYanlisTakipData;
+            };
+            
+            // --- İçe/Dışa Aktarma Fonksiyonları ---
+            const exportData = () => {
+                const combinedData = {
+                    denemeler: denemeler,
+                    yanlisTakipData: yanlisTakipData,
+                    dersKonulari: dersKonulari,
+                    stopwatchTimes: stopwatchTimes
+                };
+                const dataStr = JSON.stringify(combinedData, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                const exportFileDefaultName = 'deneme-verileri.json';
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                document.body.appendChild(linkElement);
+                linkElement.click();
+                document.body.removeChild(linkElement);
+            };
+            const importData = (event) => {
+                const file = event.target.files[0];
+                if (!file) {
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        if (importedData && Array.isArray(importedData.denemeler)) {
+                            if (confirm("Mevcut veriler silinip, yeni verilerle değiştirilecektir. Emin misiniz?")) {
+                                denemeler = importedData.denemeler;
+                                // Geriye dönük uyumluluk: Eski verilerde tarih yoksa, id'den (timestamp) oluştur.
+                                denemeler.forEach(d => {
+                                    if (!d.tarih) {
+                                        d.tarih = new Date(d.id).toISOString().split('T')[0];
+                                    }
+                                });
+                                yanlisTakipData = importedData.yanlisTakipData || {};
+                                dersKonulari = importedData.dersKonulari || {};
+                                stopwatchTimes = importedData.stopwatchTimes || [];
+                                syncYanlisTakipData();
+                                await saveToRemote();
+                                renderAllComponents();
+                                alert("Veriler başarıyla içe aktarıldı ve buluta kaydedildi.");
+                            }
+                        } else {
+                            alert("Hata: İçe aktarılan dosya geçerli bir JSON formatında değil.");
+                        }
+                    } catch (err) {
+                        alert("Hata: Dosya okunurken bir sorun oluştu. Lütfen geçerli bir JSON dosyası seçin.");
+                    }
+                };
+                reader.readAsText(file);
+            };
+            // --- Modal Fonksiyonları ---
+            const openModal = (editDeneme = null) => {
+                elements.denemeForm.reset();
+                elements.dersInputs.innerHTML = "";
+                elements.denemeNotu.value = "";
+                aktifDeneme = null;
+
+                dersler.forEach(ders => {
+                    const maxSoru = soruSayilari[ders];
+                    const fieldset = document.createElement("fieldset");
+                    fieldset.innerHTML = `<legend>${ders} (Toplam Soru: ${maxSoru})</legend>`;
+                    
+                    const dogruLabel = document.createElement("label");
+                    dogruLabel.innerHTML = `Doğru: <input type="number" min="0" max="${maxSoru}" name="dogru-${ders}" value="0" oninput="app.updateYanlis('${ders}')" required />`;
+                    fieldset.appendChild(dogruLabel);
+    
+                    const yanlisLabel = document.createElement("label");
+                    yanlisLabel.innerHTML = `Yanlış: <input type="number" readonly name="yanlis-${ders}" value="${maxSoru}" />`;
+                    fieldset.appendChild(yanlisLabel);
+                    
+                    const yanlisGrupContainer = document.createElement("div");
+                    yanlisGrupContainer.classList.add("yanlis-grup-container");
+                    yanlisGrupContainer.id = `yanlis-grup-container-${ders}`;
+                    fieldset.appendChild(yanlisGrupContainer);
+
+                    elements.dersInputs.appendChild(fieldset);
+                });
+                
+                if (editDeneme) {
+                    aktifDeneme = editDeneme;
+                    document.getElementById("denemeAdi").value = aktifDeneme.ad;
+                    document.getElementById("denemeTarihi").value = aktifDeneme.tarih || '';
+                    elements.denemeNotu.value = aktifDeneme.note || "";
+                    aktifDeneme.detaylar.forEach(({ ders, dogru, yanlislar }) => {
+                        const dogruInput = elements.denemeForm[`dogru-${ders}`];
+                        if (dogruInput) {
+                            dogruInput.value = dogru;
+                            updateYanlis(ders, yanlislar);
+                        }
+                    });
+                } else {
+                    document.getElementById("denemeTarihi").value = new Date().toISOString().split('T')[0];
+                    dersler.forEach(ders => updateYanlis(ders));
+                }
+
+                elements.modal.style.display = "flex";
             };
 
             const closeModal = () => {
                 elements.modal.style.display = "none";
-                renderAllComponents();
-            };
-
-            const createDersInputs = (denemeDetaylari = []) => {
-                elements.dersInputsDiv.innerHTML = "";
-                dersler.forEach(ders => {
-                    const detay = denemeDetaylari.find(d => d.ders === ders);
-                    const dogru = detay ? detay.dogru : '';
-                    const yanlis = detay ? detay.yanlis : '';
-                    const maxSoru = soruSayilari[ders];
-
-                    const fieldset = document.createElement("fieldset");
-                    fieldset.innerHTML = `
-                        <legend>${ders} (${maxSoru} Soru)</legend>
-                        <div style="display: flex; gap: 1rem;">
-                            <label style="flex-grow: 1;">Doğru:
-                                <input type="number" name="dogru-${ders}" id="dogru-${ders}" min="0" max="${maxSoru}" value="${dogru}" required oninput="app.updateYanlis('${ders}')" />
-                            </label>
-                            <label style="flex-grow: 1;">Yanlış:
-                                <input type="number" name="yanlis-${ders}" id="yanlis-${ders}" min="0" max="${maxSoru}" value="${yanlis}" required readonly />
-                            </label>
-                            </div>
-                        <div id="yanlis-grup-container-${ders}" class="yanlis-grup-container">
-                            </div>
-                    `;
-                    elements.dersInputsDiv.appendChild(fieldset);
-
-                    // Eğer detay varsa yanlış inputlarını doldur
-                    if (detay && detay.yanlis > 0) {
-                        updateYanlis(ders, detay.yanlisDetay);
-                    } else if (detay) {
-                        updateYanlis(ders);
-                    }
-                });
+                aktifDeneme = null;
             };
 
             const updateYanlis = (ders, values = []) => {
                 const dogruInput = elements.denemeForm[`dogru-${ders}`];
                 const yanlisInput = elements.denemeForm[`yanlis-${ders}`];
                 const yanlisGrupContainer = document.getElementById(`yanlis-grup-container-${ders}`);
-                
                 const maxSoru = soruSayilari[ders];
+
                 let dogru = parseInt(dogruInput.value);
-                
                 if (isNaN(dogru) || dogru < 0) {
                     dogru = 0;
                 } else if (dogru > maxSoru) {
                     dogru = maxSoru;
                     dogruInput.value = maxSoru;
                 }
-
                 const yanlisCount = maxSoru - dogru;
                 yanlisInput.value = yanlisCount;
-                yanlisGrupContainer.innerHTML = "";
 
+                yanlisGrupContainer.innerHTML = "";
                 if (yanlisCount > 0) {
                     const datalistId = `konular-${ders}`;
                     const datalist = document.createElement('datalist');
@@ -1357,13 +1305,12 @@
                     }
                 }
             };
-
+            
             elements.denemeForm.addEventListener("submit", async e => {
                 e.preventDefault();
                 const ad = document.getElementById("denemeAdi").value.trim();
                 let tarih = document.getElementById("denemeTarihi").value;
                 const note = elements.denemeNotu.value.trim();
-                const denemeId = elements.denemeForm.dataset.denemeId || Date.now();
                 
                 if (!ad) {
                     alert("Deneme adı boş olamaz!");
@@ -1371,86 +1318,74 @@
                 }
                 
                 if (!tarih) {
-                    tarih = new Date().toISOString().split('T')[0]; // Tarih girilmemişse bugünün tarihini kullan
+                    tarih = new Date().toISOString().split('T')[0]; // Eğer tarih girilmediyse bugünün tarihini ata
                 }
 
-                const detaylar = [];
-                let newKonular = { ...dersKonulari };
-
+                let detaylar = [];
+                let isValid = true;
+                let newKonular = new Set();
+                
                 for (const ders of dersler) {
                     const dogruInput = elements.denemeForm[`dogru-${ders}`];
-                    const yanlisInput = elements.denemeForm[`yanlis-${ders}`];
-                    
-                    const dogru = parseInt(dogruInput.value) || 0;
-                    const yanlis = parseInt(yanlisInput.value) || 0;
+                    const yanlisCount = parseInt(elements.denemeForm[`yanlis-${ders}`].value);
                     const maxSoru = soruSayilari[ders];
-
-                    // Doğrulama: Toplam soru sayısı doğru mu? (Gereksiz, `updateYanlis` zaten yönetiyor)
-                    if (dogru + yanlis > maxSoru) {
-                        alert(`${ders} için girdiğiniz doğru ve yanlış sayısı toplamı soru sayısını (${maxSoru}) aşıyor.`);
-                        return;
+                    let dogru = parseInt(dogruInput.value);
+                    if (isNaN(dogru) || dogru < 0 || dogru > maxSoru) {
+                        alert(`${ders} için doğru sayısı 0 ile ${maxSoru} arasında olmalı.`);
+                        isValid = false;
+                        break;
                     }
-                    
-                    const yanlisDetay = [];
-                    for (let i = 0; i < yanlis; i++) {
+                    const yanlis = maxSoru - dogru;
+                    let yanlislar = [];
+                    for (let i = 0; i < yanlisCount; i++) {
                         const soruNoInput = elements.denemeForm[`yanlisSoruNo-${ders}-${i}`];
                         const konuInput = elements.denemeForm[`yanlisKonu-${ders}-${i}`];
-                        
-                        const soruNo = soruNoInput ? parseInt(soruNoInput.value) || 0 : 0;
-                        const konu = konuInput ? konuInput.value.trim() : '';
-
-                        if (konu && !newKonular[ders]?.includes(konu)) {
-                            if (!newKonular[ders]) newKonular[ders] = [];
-                            newKonular[ders].push(konu);
+                        if (soruNoInput && soruNoInput.value) {
+                            const konu = konuInput?.value.trim() || '';
+                            if (konu) {
+                                newKonular.add({ ders: ders, konu: konu });
+                            }
+                            yanlislar.push({
+                                soruNo: soruNoInput.value,
+                                konu: konu
+                            });
                         }
-                        
-                        yanlisDetay.push({ soruNo, konu });
                     }
-
-                    detaylar.push({
-                        ders,
-                        dogru,
-                        yanlis,
-                        bos: maxSoru - (dogru + yanlis),
-                        yanlisDetay
-                    });
+                    detaylar.push({ ders, dogru, yanlis, yanlislar });
                 }
-                
-                const yeniDeneme = {
-                    id: denemeId,
-                    ad: ad,
-                    tarih: tarih,
-                    note: note,
-                    detaylar: detaylar
-                };
+                if (!isValid) return;
 
-                const existingIndex = denemeler.findIndex(d => d.id === denemeId);
-                if (existingIndex > -1) {
-                    denemeler[existingIndex] = yeniDeneme;
+                newKonular.forEach(item => {
+                    if (!dersKonulari[item.ders]) {
+                        dersKonulari[item.ders] = [];
+                    }
+                    if (!dersKonulari[item.ders].includes(item.konu)) {
+                        dersKonulari[item.ders].push(item.konu);
+                    }
+                });
+
+                if (aktifDeneme) {
+                    aktifDeneme.ad = ad;
+                    aktifDeneme.tarih = tarih;
+                    aktifDeneme.detaylar = detaylar;
+                    aktifDeneme.note = note;
                 } else {
-                    denemeler.push(yeniDeneme);
+                    denemeler.push({ id: Date.now(), ad, tarih, detaylar, note });
                 }
                 
-                dersKonulari = newKonular;
-                syncYanlisTakipData(); // Veri kaydetmeden önce yanlış takibini senkronize et
+                syncYanlisTakipData();
                 await saveToRemote();
                 closeModal();
+                renderAllComponents();
             });
 
-            const deleteDeneme = async (id) => {
-                if (confirm("Bu denemeyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.")) {
-                    denemeler = denemeler.filter(d => d.id !== id);
-                    delete yanlisTakipData[id];
-                    await saveToRemote();
-                    renderAllComponents();
-                }
-            };
-
-            // --- Görünüm Güncelleme ---
+            // --- Genel Görünüm Güncelleme ---
             const renderDenemeList = () => {
                 // Önceki geri butonu varsa kaldır
                 const existingBackBtn = document.querySelector('#mainContainer .back-btn');
-                if (existingBackBtn) { existingBackBtn.remove(); }
+                if (existingBackBtn) {
+                    existingBackBtn.remove();
+                }
 
                 elements.denemeListesiEl.innerHTML = "";
                 elements.denemeListesiEl.style.display = "flex";
@@ -1462,7 +1397,7 @@
                     elements.denemeListesiEl.innerHTML = "<div class='uyari-mesaji'>Henüz deneme eklenmedi. Başlamak için '+ Yeni Deneme Ekle' butonunu kullanın.</div>";
                     return;
                 }
-
+                
                 // Denemeleri tarihe göre sırala (en yeni en üstte)
                 denemeler.sort((a, b) => new Date(b.tarih) - new Date(a.tarih));
 
@@ -1472,7 +1407,7 @@
 
                     const linkContainer = document.createElement("div");
                     linkContainer.classList.add("deneme-link-container");
-                    
+
                     const a = document.createElement("a");
                     a.classList.add("deneme-link");
                     a.textContent = deneme.ad;
@@ -1481,7 +1416,7 @@
                         showDenemeDetails(deneme.id);
                         return false;
                     };
-
+                    
                     const tarihDiv = document.createElement("div");
                     tarihDiv.classList.add("deneme-tarih");
                     tarihDiv.textContent = formatDate(deneme.tarih);
@@ -1491,121 +1426,73 @@
 
                     const totalDogru = deneme.detaylar.reduce((sum, item) => sum + Number(item.dogru), 0);
                     const totalYanlis = deneme.detaylar.reduce((sum, item) => sum + Number(item.yanlis), 0);
-                    const totalSoru = deneme.detaylar.reduce((sum, item) => sum + soruSayilari[item.ders], 0);
-                    
-                    const net = totalDogru - (totalYanlis / 4);
-
                     const summarySpan = document.createElement("span");
                     summarySpan.classList.add("deneme-summary");
-                    summarySpan.textContent = ` (D: ${totalDogru} / Y: ${totalYanlis} / B: ${totalSoru - totalDogru - totalYanlis} | Net: ${net.toFixed(2)})`;
-
+                    summarySpan.textContent = ` (D: ${totalDogru} / Y: ${totalYanlis})`;
+                   
                     const actionsDiv = document.createElement("div");
                     actionsDiv.classList.add("deneme-actions");
-                    
                     const editBtn = document.createElement("button");
-                    editBtn.classList.add("secondary");
                     editBtn.textContent = "Düzenle";
-                    editBtn.onclick = () => openModal(deneme.id);
-                    
+                    editBtn.classList.add('secondary');
+                    editBtn.onclick = (ev) => {
+                        ev.stopPropagation();
+                        openModal(deneme);
+                    };
                     const deleteBtn = document.createElement("button");
-                    deleteBtn.classList.add("danger");
                     deleteBtn.textContent = "Sil";
-                    deleteBtn.onclick = () => deleteDeneme(deneme.id);
-
+                    deleteBtn.classList.add("danger");
+                    deleteBtn.onclick = async (ev) => {
+                        ev.stopPropagation();
+                        if (confirm(`"${deneme.ad}" denemesini silmek istediğine emin misin?`)) {
+                            denemeler = denemeler.filter(d => d.id !== deneme.id);
+                            syncYanlisTakipData();
+                            await saveToRemote();
+                            renderAllComponents();
+                        }
+                    };
                     actionsDiv.appendChild(editBtn);
                     actionsDiv.appendChild(deleteBtn);
-
+                    
                     div.appendChild(linkContainer);
                     div.appendChild(summarySpan);
                     div.appendChild(actionsDiv);
-                    
                     elements.denemeListesiEl.appendChild(div);
                 });
             };
 
-            const showDenemeDetails = (id) => {
-                const deneme = denemeler.find(d => d.id === id);
+            const showDenemeDetails = (denemeId) => {
+                const deneme = denemeler.find(d => d.id === denemeId);
                 if (!deneme) return;
 
                 elements.denemeListesiEl.style.display = "none";
+                elements.denemeTable.style.display = "";
+                elements.denemeNoteDiv.style.display = deneme.note ? "block" : "none";
                 document.getElementById("chartContainer").style.display = "none";
-                elements.denemeTable.style.display = "table";
-                
-                if (deneme.note) {
-                    elements.denemeNoteDiv.style.display = "block";
-                    elements.denemeNoteDiv.innerHTML = `<h3>Deneme Notu</h3><p>${deneme.note}</p>`;
-                } else {
-                    elements.denemeNoteDiv.style.display = "none";
-                    elements.denemeNoteDiv.innerHTML = "";
-                }
 
-                // Geri Butonu
+                let html = "";
+                deneme.detaylar.forEach(({ ders, dogru, yanlis, yanlislar }) => {
+                    const konular = yanlislar.map(y => y.konu).filter(Boolean).join(', ') || "-";
+                    const soruNolar = yanlislar.map(y => y.soruNo).filter(Boolean).join(', ') || "-";
+                    html += `<tr> <td>${ders}</td> <td>${dogru}</td> <td>${yanlis}</td> <td>${konular}</td> <td>${soruNolar}</td> </tr>`;
+                });
+                elements.tableBody.innerHTML = html;
+                elements.denemeNoteDiv.innerHTML = deneme.note ? `<h3>Deneme Notu (${formatDate(deneme.tarih)}):</h3><p>${deneme.note}</p>` : '';
+
+                // Geri dönüş butonu ekleme
                 const backBtn = document.createElement('a');
                 backBtn.href = "#";
                 backBtn.classList.add('back-btn');
-                backBtn.textContent = '← Deneme Listesine Geri Dön';
-                backBtn.onclick = () => { renderAllComponents(); return false; };
-                elements.mainContainer.insertBefore(backBtn, elements.mainContainer.firstChild);
-
-
-                elements.denemeTableBody.innerHTML = "";
-                let totalDogru = 0;
-                let totalYanlis = 0;
-                let totalBos = 0;
-
-                deneme.detaylar.forEach(detay => {
-                    const row = elements.denemeTableBody.insertRow();
-                    
-                    // Hesaplamaları yap
-                    const maxSoru = soruSayilari[detay.ders];
-                    const dogru = Number(detay.dogru);
-                    const yanlis = Number(detay.yanlis);
-                    const bos = maxSoru - dogru - yanlis;
-                    
-                    totalDogru += dogru;
-                    totalYanlis += yanlis;
-                    totalBos += bos;
-                    
-                    // Detaylı yanlış bilgisi
-                    let yanlisKonular = "-";
-                    let yanlisSoruNolari = "-";
-
-                    if (yanlis > 0 && detay.yanlisDetay) {
-                        const konular = new Set();
-                        const soruNolari = [];
-                        detay.yanlisDetay.forEach(y => {
-                            if (y.konu) konular.add(y.konu);
-                            if (y.soruNo) soruNolari.push(y.soruNo);
-                        });
-                        yanlisKonular = Array.from(konular).join(', ') || "-";
-                        yanlisSoruNolari = soruNolari.join(', ') || "-";
-                    }
-
-                    // Satır içeriği
-                    row.insertCell().textContent = detay.ders;
-                    row.insertCell().textContent = `${dogru} / ${maxSoru}`;
-                    row.insertCell().textContent = `${yanlis} / ${maxSoru}`;
-                    row.insertCell().textContent = yanlisKonular;
-                    row.insertCell().textContent = yanlisSoruNolari;
-                });
-
-                // Toplam satırı
-                const totalRow = elements.denemeTableBody.insertRow();
-                totalRow.style.fontWeight = "bold";
-                totalRow.style.backgroundColor = "var(--table-row-bg)";
-                totalRow.insertCell().textContent = "TOPLAM";
-                totalRow.insertCell().textContent = totalDogru;
-                totalRow.insertCell().textContent = totalYanlis;
-                totalRow.insertCell().textContent = `Net: ${(totalDogru - (totalYanlis / 4)).toFixed(2)}`;
-                totalRow.cells[3].colSpan = 2; // Son iki sütunu birleştir
-
-                // Yanlış detayları başlıkları boşaltılmalı
-                totalRow.deleteCell(4); 
+                backBtn.textContent = '← Anasayfaya Dön';
+                backBtn.onclick = (e) => {
+                    e.preventDefault();
+                    renderAllComponents();
+                };
+                elements.denemeListesiEl.parentNode.insertBefore(backBtn, elements.denemeListesiEl);
             };
-            
-            // --- Grafik ve Analiz Fonksiyonları ---
-            const renderProgressChart = (lastFive, buttonEl) => {
-                if (buttonEl) {
+
+            const renderProgressChart = (lastFive = false, buttonEl = null) => {
+                 if (buttonEl) {
                     const parent = buttonEl.parentElement;
                     parent.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
                     buttonEl.classList.add('active');
@@ -1615,30 +1502,21 @@
                     progressChart.destroy();
                     progressChart = null;
                 }
-
-                if (denemeler.length < 1) { // 1 denemede de tabloyu gösterebiliriz ama 2+ daha anlamlı
+                if (denemeler.length < 2) {
                     document.getElementById("chartContainer").style.display = "none";
                     return;
                 }
+                
                 document.getElementById("chartContainer").style.display = "block";
-
+                
                 let denemelerSource = [...denemeler].sort((a, b) => new Date(a.tarih) - new Date(b.tarih));
                 if (lastFive) {
                     denemelerSource = denemelerSource.slice(-5);
                 }
 
-                const labels = denemelerSource.map(d => {
-                    const datePart = d.tarih ? new Date(d.tarih).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }) : 'Tarihsiz';
-                    return `${d.ad} (${datePart})`;
-                });
+                const labels = denemelerSource.map(d => `${d.ad} (${new Date(d.tarih).toLocaleDateString('tr-TR')})`);
+                const netler = denemelerSource.map(d => d.detaylar.reduce((sum, item) => sum + Number(item.dogru) - Number(item.yanlis / 4), 0));
                 
-                const netler = denemelerSource.map(d => 
-                    d.detaylar.reduce((sum, item) => {
-                        // Net hesaplamasına Tarih dersi dahil, sadece grafiğe yansıtılıyor
-                        return sum + Number(item.dogru) - (Number(item.yanlis) / 4);
-                    }, 0)
-                );
-
                 progressChart = new Chart(elements.progressChartCtx, {
                     type: 'line',
                     data: {
@@ -1657,10 +1535,7 @@
                         scales: {
                             y: {
                                 beginAtZero: false,
-                                title: {
-                                    display: true,
-                                    text: 'Net Sayısı'
-                                }
+                                title: { display: true, text: 'Net Sayısı' }
                             }
                         }
                     }
@@ -1673,123 +1548,89 @@
                 renderDersListForAnalysis();
                 filterDersAnalizi(false, document.querySelector('#dersAnalizFilterBar button:first-child'));
             };
-
             const closeDersAnalizModal = () => {
                 elements.dersAnalizModal.style.display = "none";
                 renderAllComponents();
             };
-
             const renderDersListForAnalysis = () => {
                 elements.dersListForAnalysis.innerHTML = "";
                 dersler.forEach(ders => {
-                    const li = document.createElement('li');
+                    const li = document.createElement("li");
                     li.textContent = ders;
-                    li.onclick = () => renderDersDetayAnaliz(ders, document.querySelector('#dersAnalizFilterBar button.active').dataset.lastFive === 'true');
+                    li.onclick = () => {
+                        const lastFive = document.querySelector('#dersAnalizFilterBar button:nth-child(2)').classList.contains('active');
+                        
+                        // --- YENİ EKLENEN KONTROL ---
+                        // Eğer tıklanan ders zaten aktif olan derse, genel analize geri dön.
+                        if (ders === aktifDersAnaliz) {
+                            renderGenelDersAnalizi(lastFive);
+                        } 
+                        // Değilse, o dersin detayını göster (eski davranış).
+                        else { 
+                            renderDersDetayAnaliz(ders, lastFive);
+                        }
+                        // --- DEĞİŞİKLİK SONU ---
+                    };
                     elements.dersListForAnalysis.appendChild(li);
                 });
+                if(aktifDersAnaliz) {
+                     const lastFive = document.querySelector('#dersAnalizFilterBar button:nth-child(2)').classList.contains('active');
+                     renderDersDetayAnaliz(aktifDersAnaliz, lastFive);
+                }
             };
-
+            
             const renderGenelDersAnalizi = (lastFive = false) => {
-                aktifDersAnaliz = null;
+                aktifDersAnaliz = null; // Aktif ders seçimini temizle
                 document.querySelectorAll('#dersListForAnalysis li').forEach(li => li.classList.remove('active'));
 
                 let denemelerSource = [...denemeler].sort((a, b) => new Date(a.tarih) - new Date(b.tarih));
                 if (lastFive) {
                     denemelerSource = denemelerSource.slice(-5);
                 }
-                
+
                 if (denemelerSource.length === 0) {
-                    elements.dersDetayAnalizContent.innerHTML = "<div class='uyari-mesaji'>Deneme verisi bulunamadı.</div>";
+                    elements.dersDetayAnalizContent.innerHTML = "<div class='uyari-mesaji'>Analiz için deneme verisi bulunamadı.</div>";
                     return;
                 }
 
-                const dersToplam = dersler.reduce((acc, ders) => {
-                    acc[ders] = { dogru: 0, yanlis: 0, bos: 0, denemeSayisi: 0 };
-                    return acc;
-                }, {});
+                const dersYanlisSayilari = {};
+                dersler.forEach(ders => {
+                    dersYanlisSayilari[ders] = 0;
+                });
 
                 denemelerSource.forEach(deneme => {
                     deneme.detaylar.forEach(detay => {
-                        if (dersToplam[detay.ders]) {
-                            dersToplam[detay.ders].dogru += Number(detay.dogru);
-                            dersToplam[detay.ders].yanlis += Number(detay.yanlis);
-                            dersToplam[detay.ders].bos += Number(detay.bos);
-                            dersToplam[detay.ders].denemeSayisi++;
-                        }
+                        dersYanlisSayilari[detay.ders] += detay.yanlis;
                     });
                 });
 
-                let tableHtml = `
-                    <h3>Genel Ders Başarı Analizi (${lastFive ? 'Son 5 Deneme' : 'Tüm Denemeler'})</h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Ders</th>
-                                <th>Ort. Doğru</th>
-                                <th>Ort. Yanlış</th>
-                                <th>Ort. Net</th>
-                                <th>Top. Yanlış</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
+                const siraliDersler = Object.entries(dersYanlisSayilari)
+                    .filter(([, yanlisSayisi]) => yanlisSayisi > 0)
+                    .sort(([, a], [, b]) => b - a);
 
-                const sortedDersler = Object.entries(dersToplam).filter(([, data]) => data.denemeSayisi > 0)
-                    .sort(([, a], [, b]) => (b.dogru / soruSayilari[b.ders]) - (a.dogru / soruSayilari[a.ders])); // Doğru oranına göre sırala
+                let html = `<h4>En Çok Yanlış Yapılan Dersler (${lastFive ? 'Son 5 Deneme' : 'Tüm Denemeler'})</h4>`;
 
-                sortedDersler.forEach(([ders, data]) => {
-                    const avgDogru = (data.dogru / data.denemeSayisi).toFixed(2);
-                    const avgYanlis = (data.yanlis / data.denemeSayisi).toFixed(2);
-                    const avgNet = ((data.dogru - (data.yanlis / 4)) / data.denemeSayisi).toFixed(2);
-                    
-                    tableHtml += `
-                        <tr>
-                            <td>${ders}</td>
-                            <td>${avgDogru}</td>
-                            <td>${avgYanlis}</td>
-                            <td>${avgNet}</td>
-                            <td>${data.yanlis}</td>
-                        </tr>
-                    `;
-                });
-
-                tableHtml += `</tbody></table>`;
-                
-                // En çok yanlış yapılan dersler
-                const enCokYanlisDersler = Object.entries(dersToplam).filter(([, data]) => data.yanlis > 0)
-                    .sort(([, a], [, b]) => b.yanlis - a.yanlis)
-                    .slice(0, 3); // En çok 3
-
-                if (enCokYanlisDersler.length > 0) {
-                    tableHtml += `
-                        <div class="öneri-kutu" style="margin-top: 1.5rem; background-color: var(--warning-bg); border-left-color: var(--danger-btn-bg);">
-                            <h4>En Çok Yanlış Yapılan Dersler (Tekrar Önceliği)</h4>
-                            <ul>
-                    `;
-                    enCokYanlisDersler.forEach(([ders, data]) => {
-                        tableHtml += `<li><b>${ders}:</b> Toplam ${data.yanlis} yanlış. Ortalama yanlış: ${ (data.yanlis / data.denemeSayisi).toFixed(2) }</li>`;
+                if (siraliDersler.length === 0) {
+                    html += "<div class='uyari-mesaji'>Tebrikler! Bu periyotta yanlışınız bulunan bir ders yok.</div>";
+                } else {
+                    html += `<ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">`;
+                    siraliDersler.forEach(([ders, sayi]) => {
+                        html += `
+                            <li class="yanlis-item" style="flex-direction: row; justify-content: space-between; align-items: center; padding: 0.8rem 1rem;">
+                                <strong>${ders}</strong> 
+                                <span style="color: var(--danger-btn-bg); font-weight: 600;">(${sayi} yanlış)</span>
+                            </li>`;
                     });
-                    tableHtml += `
-                            </ul>
-                            <p style="font-style: italic;">Bu derslere öncelik vererek konu tekrarı ve soru çözümü yapmanız önerilir.</p>
-                        </div>
-                    `;
+                    html += `</ul>`;
                 }
-
-
-                elements.dersDetayAnalizContent.innerHTML = tableHtml;
-
+                elements.dersDetayAnalizContent.innerHTML = html;
             };
 
             const filterDersAnalizi = (lastFive, buttonEl) => {
                 if (buttonEl) {
                     const parent = buttonEl.parentElement;
-                    parent.querySelectorAll('button').forEach(btn => {
-                        btn.classList.remove('active');
-                        btn.dataset.lastFive = 'false';
-                    });
+                    parent.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
                     buttonEl.classList.add('active');
-                    buttonEl.dataset.lastFive = 'true';
                 }
 
                 if (aktifDersAnaliz) {
@@ -1799,7 +1640,6 @@
                 }
             };
 
-
             const renderDersDetayAnaliz = (dersAdi, lastFive = false) => {
                 aktifDersAnaliz = dersAdi;
                 document.querySelectorAll('#dersListForAnalysis li').forEach(li => {
@@ -1808,121 +1648,78 @@
                         li.classList.add('active');
                     }
                 });
+                
                 elements.dersDetayAnalizContent.innerHTML = "";
-
                 if (window.singleDersChartInstance) {
                     window.singleDersChartInstance.destroy();
                 }
-
+                
                 let denemelerSource = [...denemeler].sort((a, b) => new Date(a.tarih) - new Date(b.tarih));
                 if (lastFive) {
                     denemelerSource = denemelerSource.slice(-5);
                 }
-                
+
                 if (denemelerSource.length === 0) {
-                    elements.dersDetayAnalizContent.innerHTML = "<div class='uyari-mesaji'>Deneme verisi bulunamadı.</div>";
+                    elements.dersDetayAnalizContent.innerHTML = "<p>Deneme verisi bulunamadı.</p>";
                     return;
                 }
 
-                const denemeAdlari = denemelerSource.map(d => {
-                    const datePart = d.tarih ? new Date(d.tarih).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' }) : 'Tarihsiz';
-                    return `${d.ad} (${datePart})`;
-                }).filter(name => denemelerSource.some(d => d.detaylar.find(detay => detay.ders === dersAdi)));
-
-                const dogruVerileri = denemelerSource.map(d => 
-                    d.detaylar.find(detay => detay.ders === dersAdi)?.dogru || 0
-                ).filter((val, index) => denemelerSource[index].detaylar.some(detay => detay.ders === dersAdi));
-                
-                const yanlisVerileri = denemelerSource.map(d => 
-                    d.detaylar.find(detay => detay.ders === dersAdi)?.yanlis || 0
-                ).filter((val, index) => denemelerSource[index].detaylar.some(detay => detay.ders === dersAdi));
-
-                const netVerileri = denemelerSource.map(d => {
-                    const detay = d.detaylar.find(detay => detay.ders === dersAdi);
-                    if (detay) {
-                        return Number(detay.dogru) - (Number(detay.yanlis) / 4);
-                    }
-                    return 0;
-                }).filter((val, index) => denemelerSource[index].detaylar.some(detay => detay.ders === dersAdi));
-
-                
-                if (denemeAdlari.length === 0) {
-                     elements.dersDetayAnalizContent.innerHTML = `<div class='uyari-mesaji'>Seçilen filtrede (${lastFive ? 'Son 5 Deneme' : 'Tüm Denemeler'}) ${dersAdi} dersine ait veri bulunmamaktadır.</div>`;
-                     return;
-                }
-                
-                const canvas = document.createElement('canvas');
-                canvas.id = 'singleDersChart';
-                elements.dersDetayAnalizContent.appendChild(canvas);
-
-                const ctx = canvas.getContext('2d');
-                window.singleDersChartInstance = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: denemeAdlari,
-                        datasets: [
-                            {
-                                label: 'Doğru',
-                                data: dogruVerileri,
-                                backgroundColor: 'rgba(52, 152, 219, 0.7)',
-                            },
-                            {
-                                label: 'Yanlış',
-                                data: yanlisVerileri,
-                                backgroundColor: 'rgba(231, 76, 60, 0.7)',
-                            },
-                            {
-                                type: 'line',
-                                label: 'Net',
-                                data: netVerileri,
-                                borderColor: '#27ae60',
-                                backgroundColor: 'rgba(39, 174, 96, 0.2)',
-                                fill: false,
-                                tension: 0.4,
-                                yAxisID: 'y1'
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                title: {
-                                    display: true,
-                                    text: 'Soru Sayısı'
-                                }
-                            },
-                            y1: {
-                                type: 'linear',
-                                display: true,
-                                position: 'right',
-                                grid: {
-                                    drawOnChartArea: false,
-                                },
-                                title: {
-                                    display: true,
-                                    text: 'Net Sayısı'
-                                }
-                            }
-                        }
-                    }
+                const denemeAdlari = denemelerSource.map(d => d.ad);
+                const dogruVerileri = denemelerSource.map(d => {
+                    const detay = d.detaylar.find(det => det.ders === dersAdi);
+                    return detay ? detay.dogru : 0;
+                });
+                const yanlisVerileri = denemelerSource.map(d => {
+                    const detay = d.detaylar.find(det => det.ders === dersAdi);
+                    return detay ? detay.yanlis : 0;
+                });
+                const bosVerileri = denemelerSource.map(d => {
+                    const detay = d.detaylar.find(det => det.ders === dersAdi);
+                    return detay ? soruSayilari[dersAdi] - detay.dogru - detay.yanlis : soruSayilari[dersAdi];
                 });
 
-                // Konu Analizi
+                const chartCanvas = document.createElement('canvas');
+                chartCanvas.id = 'singleDersChart';
+                elements.dersDetayAnalizContent.appendChild(chartCanvas);
+
+                const chartData = {
+                    labels: denemeAdlari,
+                    datasets: [
+                        { label: 'Doğru', data: dogruVerileri, backgroundColor: '#27ae60', stack: 'Stack 0' },
+                        { label: 'Yanlış', data: yanlisVerileri, backgroundColor: '#e74c3c', stack: 'Stack 0' },
+                        { label: 'Boş', data: bosVerileri, backgroundColor: '#95a5a6', stack: 'Stack 0' }
+                    ]
+                };
+
+                const chartConfig = {
+                    type: 'bar',
+                    data: chartData,
+                    options: {
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `${dersAdi} Dersi Analizi (${lastFive ? 'Son 5 Deneme' : 'Tüm Denemeler'})`
+                            }
+                        },
+                        responsive: true, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } }
+                    }
+                };
+                window.singleDersChartInstance = new Chart(chartCanvas.getContext('2d'), chartConfig);
+
                 const enCokYanlisKonular = {};
                 denemelerSource.forEach(deneme => {
                     const detay = deneme.detaylar.find(d => d.ders === dersAdi);
-                    if (detay && detay.yanlisDetay) {
-                        detay.yanlisDetay.forEach(y => {
-                            if (y.konu) {
-                                enCokYanlisKonular[y.konu] = (enCokYanlisKonular[y.konu] || 0) + 1;
+                    if (detay && detay.yanlislar) {
+                        detay.yanlislar.forEach(yanlis => {
+                            if (yanlis.konu) {
+                                const konu = yanlis.konu.trim();
+                                enCokYanlisKonular[konu] = (enCokYanlisKonular[konu] || 0) + 1;
                             }
                         });
                     }
                 });
-
                 const sortedKonular = Object.entries(enCokYanlisKonular).sort(([, a], [, b]) => b - a);
+
                 let konularHtml = "";
                 if (sortedKonular.length > 0) {
                     konularHtml = `<h4>En Çok Yanlış Yapılan Konular:</h4><ul>`;
@@ -1931,74 +1728,63 @@
                     });
                     konularHtml += `</ul>`;
                 } else {
-                    konularHtml = "<div class='uyari-mesaji'>Bu derste yanlış yapılan bir konu bilgisi bulunamadı.</div>";
+                    konularHtml = "<p>Bu derste yanlış yapılan bir konu bilgisi bulunamadı.</p>";
                 }
-
                 const konularDiv = document.createElement('div');
                 konularDiv.innerHTML = konularHtml;
-                konularDiv.style.marginTop = '1.5rem';
                 elements.dersDetayAnalizContent.appendChild(konularDiv);
             };
 
-            // --- Yanlışlarımın Listesi (Yanlışlarımı Görüntüle) Fonksiyonları ---
             const openYanlislarModal = () => {
                 clearAllViews();
                 elements.yanlisModal.style.display = "flex";
                 showYanlisDenemeListesi(false, document.querySelector('#yanlisModal .filter-bar button'));
             };
-
             const closeYanlislarModal = () => {
                 elements.yanlisModal.style.display = "none";
                 renderAllComponents();
             };
-
             const showYanlisDenemeListesi = (lastFive = false, buttonEl = null) => {
-                if (buttonEl) {
+                 if (buttonEl) {
                     const parent = buttonEl.parentElement;
                     parent.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
                     buttonEl.classList.add('active');
                 }
-                
+
                 elements.yanlisDenemeListesi.style.display = "block";
                 elements.yanlisDetayContainer.style.display = "none";
                 elements.yanlisDenemeListesi.innerHTML = "";
-
-                let denemelerWithYanlis = denemeler.filter(d => 
-                    d.detaylar.some(detay => detay.yanlis > 0 && detay.ders !== "Tarih") // Tarih hariç
-                ).sort((a,b) => new Date(b.tarih) - new Date(a.tarih));
-
+                
+                let denemelerWithYanlis = denemeler.filter(d => d.detaylar.some(detay => detay.yanlis > 0))
+                                                 .sort((a,b) => new Date(b.tarih) - new Date(a.tarih));
+                
                 if(lastFive) {
                     denemelerWithYanlis = denemelerWithYanlis.slice(0, 5);
                 }
 
                 if (denemelerWithYanlis.length === 0) {
-                    elements.yanlisDenemeListesi.innerHTML = `<div class="uyari-mesaji">Tebrikler! Takip edilen derslerde (Tarih hariç) yanlış sorunuz olan bir deneme bulunmamaktadır.</div>`;
+                    elements.yanlisDenemeListesi.innerHTML = `<div class="uyari-mesaji">Tebrikler! Yanlış sorunuz olan bir deneme bulunmamaktadır.</div>`;
                     return;
                 }
-
+                
                 denemelerWithYanlis.forEach(deneme => {
-                    const totalYanlis = deneme.detaylar.reduce((sum, item) => {
-                        return item.ders !== "Tarih" ? sum + Number(item.yanlis) : sum; // Tarih hariç yanlış say
-                    }, 0);
-                    
-                    if (totalYanlis === 0) return; // Tarih hariç hiç yanlış yoksa listeleme
-
+                    const totalYanlis = deneme.detaylar.reduce((sum, item) => sum + Number(item.yanlis), 0);
                     const div = document.createElement("div");
                     div.classList.add("deneme-list-item");
-
+                    
                     const linkContainer = document.createElement("div");
                     linkContainer.classList.add("deneme-link-container");
-                    
+
                     const a = document.createElement("a");
                     a.classList.add("deneme-link");
-                    a.textContent = deneme.ad;
                     a.href = "#";
                     a.onclick = () => {
                         showDenemeYanlislari(deneme.id);
                         return false;
                     };
+                    a.textContent = deneme.ad;
 
-                    const tarihDiv = document.createElement("div");
+                     const tarihDiv = document.createElement("div");
                     tarihDiv.classList.add("deneme-tarih");
                     tarihDiv.textContent = formatDate(deneme.tarih);
 
@@ -2007,81 +1793,56 @@
 
                     const summarySpan = document.createElement("span");
                     summarySpan.classList.add("deneme-summary");
-                    summarySpan.innerHTML = `Toplam <b>${totalYanlis}</b> yanlış.`;
-
-                    const actionsDiv = document.createElement("div");
-                    actionsDiv.classList.add("deneme-actions");
+                    summarySpan.textContent = ` (${totalYanlis} yanlış)`;
                     
-                    const viewBtn = document.createElement("button");
-                    viewBtn.classList.add("primary");
-                    viewBtn.textContent = "Görüntüle";
-                    viewBtn.onclick = () => showDenemeYanlislari(deneme.id);
-
-                    actionsDiv.appendChild(viewBtn);
-
                     div.appendChild(linkContainer);
                     div.appendChild(summarySpan);
-                    div.appendChild(actionsDiv);
-                    
                     elements.yanlisDenemeListesi.appendChild(div);
                 });
             };
 
-            const showDenemeYanlislari = (id) => {
-                elements.yanlisDenemeListesi.style.display = "none";
-                elements.yanlisDetayContainer.style.display = "block";
-
-                const deneme = denemeler.find(d => d.id === id);
+            const showDenemeYanlislari = (denemeId) => {
+                const deneme = denemeler.find(d => d.id === denemeId);
                 if (!deneme) return;
 
-                document.getElementById("yanlisDenemeTitle").textContent = `${deneme.ad} (${formatDate(deneme.tarih)}) - Yanlış Detayları`;
-
+                elements.yanlisDenemeListesi.style.display = "none";
+                elements.yanlisDetayContainer.style.display = "block";
+                elements.yanlisDenemeTitle.textContent = `${deneme.ad} - Yanlış Analizi`;
+                
                 let yanlislar = [];
-                let analizData = {};
-
                 deneme.detaylar.forEach(detay => {
-                    if (detay.ders === "Tarih") { // İSTENEN DEĞİŞİKLİK: Tarih dersini burada da atla
-                        return;
-                    }
-                    if (detay.yanlis > 0) {
-                        // Konu analizi için
-                        if (!analizData[detay.ders]) {
-                            analizData[detay.ders] = { total: 0, count: 0 };
-                        }
-                        analizData[detay.ders].total += detay.yanlis;
-                        analizData[detay.ders].count++;
-
-                        // Detaylı liste için
-                        if (detay.yanlisDetay) {
-                            detay.yanlisDetay.forEach(y => {
-                                yanlislar.push({ ders: detay.ders, soruNo: y.soruNo, konu: y.konu });
-                            });
-                        }
-                    }
+                    yanlislar.push(...(detay.yanlislar || []).map(y => ({
+                        ders: detay.ders,
+                        ...y
+                    })));
                 });
-
-                // Analiz özeti (Ders bazlı yanlış sayıları)
-                let analizHtml = `<h4>Ders Bazlı Yanlışlar:</h4>`;
-                const siraliDersler = Object.entries(analizData).sort(([, a], [, b]) => b.total - a.total).map(([ders, data]) => [ders, data.total]);
-
-                if (siraliDersler.length > 0) {
-                    analizHtml += `<ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">`;
-                    siraliDersler.forEach(([ders, sayi]) => {
-                        analizHtml += `
-                            <li class="yanlis-item" style="flex-direction: row; justify-content: space-between; align-items: center; padding: 0.8rem 1rem;">
-                                <strong>${ders}</strong>
-                                <span style="color: var(--danger-btn-bg); font-weight: 600;">(${sayi} yanlış)</span>
-                            </li>
-                        `;
-                    });
-                    analizHtml += `</ul>`;
-                } else {
-                    analizHtml += `<div class="uyari-mesaji">Bu denemede takip edilen derslere (Tarih hariç) ait yanlış bilgisi girilmemiştir.</div>`;
+                
+                if (yanlislar.length === 0) {
+                    elements.yanlisDetayTable.innerHTML = `<div class="uyari-mesaji">Bu denemede yanlış soru bulunmamaktadır.</div>`;
+                    elements.yanlisKonuAnalizi.innerHTML = "";
+                    return;
                 }
 
+                const konuAnalizi = {};
+                yanlislar.forEach(y => {
+                    if (y.konu) {
+                        const konu = y.konu.trim();
+                        konuAnalizi[konu] = (konuAnalizi[konu] || 0) + 1;
+                    }
+                });
+                const siraliKonular = Object.entries(konuAnalizi).sort(([,a], [,b]) => b - a);
+
+                let analizHtml = "<h4>Bu Denemede En Çok Yanlış Yapılan Konular:</h4><ul>";
+                if(siraliKonular.length > 0) {
+                    siraliKonular.slice(0, 3).forEach(([konu, sayi]) => {
+                        analizHtml += `<li><b>${konu}</b> (${sayi} yanlış)</li>`;
+                    });
+                } else {
+                    analizHtml = `<div class="uyari-mesaji">Bu deneme için yanlış konusu bilgisi girilmemiştir.</div>`;
+                }
+                analizHtml += "</ul>";
                 elements.yanlisKonuAnalizi.innerHTML = analizHtml;
 
-                // Detaylı yanlış tablosu
                 let tableHtml = `
                     <thead>
                         <tr>
@@ -2099,41 +1860,26 @@
                 elements.yanlisDetayTable.innerHTML = tableHtml;
             };
 
-            // --- Yanlış Takibi Fonksiyonları ---
+
             const updateYanlisTakibiButtonStatus = () => {
-                // İSTENEN DEĞİŞİKLİK: Tarih dersindeki yanlışları hariç tutarak toplam çözülmemiş yanlış sayısını hesapla
-                const totalUnsolved = Object.values(yanlisTakipData).reduce((total, deneme) => {
-                    return total + Object.entries(deneme.dersler).reduce((denemeTotal, [ders, yanlislar]) => {
-                        if (ders === "Tarih") { // Tarih yanlışlarını sayma
-                            return denemeTotal;
-                        }
-                        return denemeTotal + yanlislar.filter(s => !s.cozuldu).length;
-                    }, 0);
-                }, 0);
-                
+                const totalUnsolved = Object.values(yanlisTakipData).flatMap(d => Object.values(d.dersler)).flatMap(d => d).filter(s => !s.cozuldu).length;
                 elements.yanlisTakibiBtn.textContent = `Yanlış Takibi`;
                 elements.yanlisTakibiBtn.classList.remove('yanlis-button-blink');
-                
                 if (totalUnsolved > 0) {
                     elements.yanlisTakibiBtn.classList.add('yanlis-button-blink');
                     elements.yanlisTakibiBtn.textContent = `Yanlış Takibi (${totalUnsolved})`;
                 }
             };
-
+            
             const openYanlisTakipModal = () => {
                 clearAllViews();
                 elements.yanlisTakipModal.style.display = "flex";
-                syncYanlisTakipData(); // Açılışta tekrar senkronizasyon yap
+                syncYanlisTakipData();
                 switchYanlisTakipView('deneme');
             };
-
-            const closeYanlisTakipModal = () => {
-                elements.yanlisTakipModal.style.display = "none";
-                renderAllComponents();
-            };
-
+            
             const switchYanlisTakipView = (view) => {
-                if (view === 'deneme') {
+                 if (view === 'deneme') {
                     elements.yanlisTakipTabDeneme.classList.add('active');
                     elements.yanlisTakipTabKonu.classList.remove('active');
                     elements.yanlisTakipSoruListContainer.style.display = 'none';
@@ -2148,98 +1894,92 @@
                     renderYanlisTakipKonuOzet();
                 }
             };
-
+            
             const renderYanlisTakipKonuOzet = () => {
                 const unsolvedKonularByDers = {};
                 
                 Object.values(yanlisTakipData).forEach(deneme => {
-                    Object.entries(deneme.dersler).forEach(([ders, yanlislar]) => {
-                        if (ders === "Tarih") return; // İSTENEN DEĞİŞİKLİK: Tarih dersini atla
-                        
-                        yanlislar.filter(y => !y.cozuldu).forEach(y => {
-                            const konu = y.konu || 'Konu Belirtilmemiş';
-                            if (!unsolvedKonularByDers[ders]) {
-                                unsolvedKonularByDers[ders] = {};
+                    Object.entries(deneme.dersler).forEach(([dersAdi, sorular]) => {
+                         sorular.forEach(soru => {
+                            if (!soru.cozuldu && soru.konu) {
+                                if (!unsolvedKonularByDers[dersAdi]) {
+                                    unsolvedKonularByDers[dersAdi] = {};
+                                }
+                                const konu = soru.konu.trim();
+                                unsolvedKonularByDers[dersAdi][konu] = (unsolvedKonularByDers[dersAdi][konu] || 0) + 1;
                             }
-                            unsolvedKonularByDers[ders][konu] = (unsolvedKonularByDers[ders][konu] || 0) + 1;
                         });
                     });
                 });
+                
+                elements.yanlisTakipKonuListesi.innerHTML = "";
+                const derslerListesi = Object.keys(unsolvedKonularByDers);
+
+                if (derslerListesi.length === 0) {
+                    elements.yanlisTakipKonuListesi.innerHTML = `<div class="uyari-mesaji">Harika! Tekrar etmeniz gereken bir konu bulunmamaktadır.</div>`;
+                    return;
+                }
 
                 let html = "";
-                const derslerSirali = Object.keys(unsolvedKonularByDers).sort();
+                derslerListesi.forEach(ders => {
+                    html += `<h4>${ders}</h4>`;
+                    const konular = unsolvedKonularByDers[ders];
+                    const sortedKonular = Object.entries(konular).sort(([, a], [, b]) => b - a);
+                    
+                    const konuListesiHtml = sortedKonular.map(([konu, sayi]) => 
+                        `<li class="yanlis-item" style="flex-direction: row; justify-content: space-between; align-items: center; padding: 0.8rem 1rem;">
+                            <strong>${konu}</strong> 
+                            <span style="color: var(--danger-btn-bg); font-weight: 600;">(${sayi} soru)</span>
+                        </li>`
+                    ).join('');
 
-                if (derslerSirali.length === 0) {
-                    html = "<div class='öneri-kutu' style='background-color: var(--success-bg); border-left-color: var(--success-border);'><h4>Tebrikler!</h4><p>Çözülmemiş yanlış sorunuz bulunmamaktadır. Tüm konulara hakimsiniz!</p></div>";
-                } else {
-                    derslerSirali.forEach(ders => {
-                        html += `<h4>${ders}</h4>`;
-                        html += `<ul id="konu-list-${ders}" style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">`;
-                        
-                        const konularSirali = Object.entries(unsolvedKonularByDers[ders])
-                            .sort(([, a], [, b]) => b - a);
-
-                        konularSirali.forEach(([konu, sayi]) => {
-                             html += `
-                                <li class="yanlis-item" style="flex-direction: row; justify-content: space-between; align-items: center; padding: 0.8rem 1rem;">
-                                    <strong>${konu}</strong>
-                                    <span style="color: var(--danger-btn-bg); font-weight: 600;">(${sayi} yanlış)</span>
-                                </li>
-                            `;
-                        });
-                        html += `</ul>`;
-                    });
-                }
+                    html += `<ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">${konuListesiHtml}</ul>`;
+                });
 
                 elements.yanlisTakipKonuListesi.innerHTML = html;
             };
 
-            let currentYanlisTakipDenemeId = null;
-
+            const closeYanlisTakipModal = () => {
+                elements.yanlisTakipModal.style.display = "none";
+                elements.yanlisTakipDenemeListContainer.style.display = "block";
+                elements.yanlisTakipSoruListContainer.style.display = "none";
+                currentYanlisTakipDenemeId = null;
+                renderAllComponents();
+            };
+            
             const renderYanlisTakipDenemeList = () => {
-                elements.yanlisTakipDenemeListContainer.style.display = 'block';
-                elements.yanlisTakipKonuOzetContainer.style.display = 'none';
-                elements.yanlisTakipSoruListContainer.style.display = 'none';
+                elements.yanlisTakipDenemeListContainer.style.display = "block";
+                elements.yanlisTakipSoruListContainer.style.display = "none";
                 elements.yanlisTakipDenemeListesi.innerHTML = "";
+
+                const denemelerWithYanlis = Object.entries(yanlisTakipData)
+                    .filter(([id, data]) => {
+                        const unresolvedCount = Object.values(data.dersler).flatMap(d => d).filter(s => !s.cozuldu).length;
+                        return unresolvedCount > 0;
+                    })
+                    .sort(([, a], [, b]) => new Date(b.tarih) - new Date(a.tarih));
                 
-                if (Object.keys(yanlisTakipData).length === 0) {
-                    elements.yanlisTakipDenemeListesi.innerHTML = `<div class="uyari-mesaji">Henüz takip edilecek yanlış verisi bulunmamaktadır. Deneme girmeye devam edin.</div>`;
+                if (denemelerWithYanlis.length === 0) {
+                    elements.yanlisTakipDenemeListesi.innerHTML = `<div class="uyari-mesaji">Harika! Çözülmesi gereken yanlış sorunuz bulunmamaktadır.</div>`;
                     return;
                 }
 
-                Object.entries(yanlisTakipData)
-                    // Sadece çözülmemiş yanlışı olanları filtrele (Tarih hariç)
-                    .filter(([denemeId, data]) => {
-                        const totalUnsolvedInDeneme = Object.entries(data.dersler).reduce((sum, [ders, yanlislar]) => {
-                            if (ders === "Tarih") return sum; // İSTENEN DEĞİŞİKLİK: Tarih yanlışlarını sayma
-                            return sum + yanlislar.filter(s => !s.cozuldu).length;
-                        }, 0);
-                        return totalUnsolvedInDeneme > 0;
-                    })
-                    .sort(([, a], [, b]) => new Date(b.tarih) - new Date(a.tarih))
-                    .forEach(([denemeId, data]) => {
-                        // Yanlış sayısını tekrar hesapla (Tarih hariç)
-                        const yanlisSayisi = Object.entries(data.dersler).reduce((sum, [ders, yanlislar]) => {
-                            if (ders === "Tarih") return sum; // İSTENEN DEĞİŞİKLİK: Tarih yanlışlarını sayma
-                            return sum + yanlislar.filter(s => !s.cozuldu).length;
-                        }, 0);
-                        
-                        const li = document.createElement("li");
-                        const link = document.createElement("a");
-                        link.href = "#";
-                        link.classList.add("deneme-link-yanlis");
-                        link.innerHTML = `${data.ad} <small>(${formatDate(data.tarih)})</small> <span>(${yanlisSayisi} çözülmemiş yanlış)</span>`;
-                        
-                        link.onclick = (e) => {
-                            e.preventDefault();
-                            currentYanlisTakipDenemeId = denemeId;
-                            elements.yanlisTakipShowAll.checked = false;
-                            showYanlisTakipSoruList(false);
-                        };
-
-                        li.appendChild(link);
-                        elements.yanlisTakipDenemeListesi.appendChild(li);
-                    });
+                denemelerWithYanlis.forEach(([denemeId, data]) => {
+                    const yanlisSayisi = Object.values(data.dersler).flatMap(d => d).filter(s => !s.cozuldu).length;
+                    const li = document.createElement("li");
+                    const link = document.createElement("a");
+                    link.href = "#";
+                    link.classList.add("deneme-link-yanlis");
+                    link.innerHTML = `${data.ad} <small>(${formatDate(data.tarih)})</small> <span>(${yanlisSayisi} yanlış)</span>`;
+                    link.onclick = (e) => {
+                        e.preventDefault();
+                        currentYanlisTakipDenemeId = denemeId;
+                        elements.yanlisTakipShowAll.checked = false;
+                        showYanlisTakipSoruList(false);
+                    };
+                    li.appendChild(link);
+                    elements.yanlisTakipDenemeListesi.appendChild(li);
+                });
             };
 
             const showYanlisTakipSoruList = (showAll) => {
@@ -2259,118 +1999,90 @@
 
                 let yanlislarListesiHtml = "";
                 let hasYanlis = false;
-
+                
                 dersler.forEach(ders => {
-                    if (ders === "Tarih") return; // İSTENEN DEĞİŞİKLİK: Tarih dersini atla
-
                     const dersYanlislari = denemeData.dersler[ders] || [];
-                    
                     if (dersYanlislari.length > 0) {
                         const filteredYanlislar = showAll ? dersYanlislari : dersYanlislari.filter(y => !y.cozuldu);
-                        
                         if (filteredYanlislar.length > 0) {
                             hasYanlis = true;
                             yanlislarListesiHtml += `<h4>${ders}</h4>`;
-
                             const soruListesiHtml = filteredYanlislar.map(yanlis => {
                                 const checked = yanlis.cozuldu ? 'checked' : '';
                                 const solvedClass = yanlis.cozuldu ? 'solved' : '';
-                                const soruNoText = yanlis.soruNo ? `Soru No: ${yanlis.soruNo}` : 'Soru No Belirtilmemiş';
-                                const konuText = yanlis.konu || 'Konu Belirtilmemiş';
-                                
                                 return `
-                                    <li class="yanlis-item ${solvedClass}" data-ders="${ders}" data-soruno="${yanlis.soruNo}" data-konu="${yanlis.konu}">
+                                    <li class="yanlis-item ${solvedClass}">
                                         <div class="yanlis-item-header">
-                                            <span>${soruNoText}</span>
-                                            <small>${konuText}</small>
-                                        </div>
-                                        <div class="yanlis-actions">
-                                            <label>
-                                                <input type="checkbox" onchange="app.toggleYanlisTakipSoruStatus('${ders}', ${yanlis.soruNo}, '${yanlis.konu.replace(/'/g, "\\'")}', this.checked)" ${checked}>
-                                                Çözüldü Olarak İşaretle
-                                            </label>
+                                            <span>Soru: ${yanlis.soruNo}</span>
+                                            <span>Konu: ${yanlis.konu || 'Bilinmiyor'}</span>
+                                            <div class="yanlis-actions">
+                                                <label>
+                                                    <input type="checkbox" ${checked} onchange="app.toggleYanlisTakipSoruStatus('${currentYanlisTakipDenemeId}', '${ders}', '${yanlis.soruNo}', this.checked)"/>
+                                                    <span>Çözüldü</span>
+                                                </label>
+                                            </div>
                                         </div>
                                     </li>
                                 `;
                             }).join('');
-                            yanlislarListesiHtml += `<ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.5rem;">${soruListesiHtml}</ul>`;
+                            yanlislarListesiHtml += `<ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">${soruListesiHtml}</ul>`;
                         }
                     }
                 });
 
                 if (!hasYanlis) {
-                    yanlislarListesiHtml = `<div class="öneri-kutu" style='background-color: var(--success-bg); border-left-color: var(--success-border);'><h4>Tebrikler!</h4><p>Bu denemedeki takip edilen tüm yanlışları çözmüşsünüz.</p></div>`;
+                    const message = showAll ? "Bu denemede hiç yanlış soru kaydedilmemiş." : "Bu denemede çözülmesi gereken yanlış soru bulunmamaktadır.";
+                    yanlislarListesiHtml = `<div class="uyari-mesaji">${message}</div>`;
                 }
 
                 elements.yanlisTakipListesi.innerHTML = yanlislarListesiHtml;
             };
 
-            const toggleYanlisTakipSoruStatus = async (ders, soruNo, konu, isChecked) => {
-                if (!yanlisTakipData[currentYanlisTakipDenemeId]) return;
-                
-                const dersYanlislari = yanlisTakipData[currentYanlisTakipDenemeId].dersler[ders] || [];
-                
-                const yanlisIndex = dersYanlislari.findIndex(y => 
-                    y.soruNo == soruNo && y.konu === konu
-                );
-
-                if (yanlisIndex > -1) {
-                    dersYanlislari[yanlisIndex].cozuldu = isChecked;
-                    await saveToRemote();
-                    // Tekrar render et
-                    showYanlisTakipSoruList(elements.yanlisTakipShowAll.checked);
-                    updateYanlisTakibiButtonStatus();
+            const toggleYanlisTakipSoruStatus = async (denemeId, ders, soruNo, isChecked) => {
+                const denemeData = yanlisTakipData[denemeId];
+                if (denemeData && denemeData.dersler[ders]) {
+                    const soru = denemeData.dersler[ders].find(s => s.soruNo == soruNo);
+                    if (soru) {
+                        soru.cozuldu = isChecked;
+                        await saveToRemote();
+                        showYanlisTakipSoruList(elements.yanlisTakipShowAll.checked);
+                        updateYanlisTakibiButtonStatus();
+                    }
                 }
             };
             
-            // --- Karşılaştırma Fonksiyonları ---
             const openKarsilastirmaModal = () => {
                 clearAllViews();
                 elements.karsilastirmaModal.style.display = "flex";
                 renderDenemeSecimList();
                 elements.karsilastirmaSonucContainer.innerHTML = "";
             };
-
             const closeKarsilastirmaModal = () => {
                 elements.karsilastirmaModal.style.display = "none";
                 renderAllComponents();
             };
-
             const renderDenemeSecimList = () => {
                 elements.denemeSecimList.innerHTML = "";
-                // Denemeleri tarihe göre sırala
-                const sortedDenemeler = [...denemeler].sort((a, b) => new Date(b.tarih) - new Date(a.tarih));
-
-                if (sortedDenemeler.length === 0) {
-                     elements.denemeSecimList.innerHTML = `<div class="uyari-mesaji">Karşılaştırmak için deneme bulunmamaktadır.</div>`;
-                     return;
+                if(denemeler.length < 2) {
+                    elements.denemeSecimList.innerHTML = `<div class="uyari-mesaji" style="width:100%;">En az 2 deneme ekleyerek karşılaştırma yapabilirsiniz.</div>`;
+                    return;
                 }
-                
+                const sortedDenemeler = [...denemeler].sort((a,b) => new Date(b.tarih) - new Date(a.tarih));
                 sortedDenemeler.forEach(deneme => {
-                    const label = document.createElement('label');
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.name = 'denemeSecim';
-                    checkbox.value = deneme.id;
-                    
-                    label.appendChild(checkbox);
-                    label.innerHTML += `${deneme.ad} <small>(${formatDate(deneme.tarih)})</small>`;
-                    
+                    const label = document.createElement("label");
+                    label.innerHTML = `<input type="checkbox" name="denemeSecim" value="${deneme.id}">${deneme.ad} (${formatDate(deneme.tarih)})`;
                     elements.denemeSecimList.appendChild(label);
                 });
             };
-
             const compareSelectedDenemeler = () => {
-                const selectedIds = Array.from(document.querySelectorAll('#denemeSecimList input:checked')).map(cb => cb.value);
-
+                const selectedIds = Array.from(document.querySelectorAll('#denemeSecimList input:checked')).map(cb => Number(cb.value));
                 if (selectedIds.length < 2) {
                     alert("Karşılaştırma için en az iki deneme seçmelisiniz.");
                     return;
                 }
-
                 const selectedDenemeler = denemeler.filter(d => selectedIds.includes(d.id))
-                    .sort((a,b) => new Date(a.tarih) - new Date(b.tarih)); // Tarihe göre sırala
-                
+                                                   .sort((a,b) => new Date(a.tarih) - new Date(b.tarih));
+
                 let tableHtml = `<h3>Seçilen Denemelerin Karşılaştırması</h3>`;
                 tableHtml += `<table><thead><tr><th>Ders</th>`;
                 selectedDenemeler.forEach(d => tableHtml += `<th>${d.ad}</th>`);
@@ -2378,7 +2090,7 @@
 
                 let totalDogru = {};
                 let totalYanlis = {};
-
+                
                 dersler.forEach(ders => {
                     tableHtml += `<tr><td>${ders}</td>`;
                     selectedDenemeler.forEach(d => {
@@ -2386,21 +2098,18 @@
                         const dogru = detay ? detay.dogru : 0;
                         const yanlis = detay ? detay.yanlis : 0;
                         tableHtml += `<td>D: ${dogru}<br>Y: ${yanlis}</td>`;
-                        
                         totalDogru[d.id] = (totalDogru[d.id] || 0) + dogru;
                         totalYanlis[d.id] = (totalYanlis[d.id] || 0) + yanlis;
                     });
                     tableHtml += `</tr>`;
                 });
 
-                // TOPLAM satırı
-                tableHtml += `<tr style="font-weight:bold; background-color: var(--table-header-bg); color: white;"><td>TOPLAM (D/Y)</td>`;
+                tableHtml += `<tr style="font-weight:bold; background-color: var(--table-row-bg);"><td>TOPLAM</td>`;
                 selectedDenemeler.forEach(d => {
                     tableHtml += `<td>D: ${totalDogru[d.id] || 0}<br>Y: ${totalYanlis[d.id] || 0}</td>`;
                 });
                 tableHtml += `</tr>`;
-
-                // NET satırı
+                
                 tableHtml += `<tr style="font-weight:bold; background-color: var(--table-row-bg);"><td>NET</td>`;
                 selectedDenemeler.forEach(d => {
                     const net = (totalDogru[d.id] || 0) - (totalYanlis[d.id] || 0) / 4;
@@ -2412,114 +2121,73 @@
                 elements.karsilastirmaSonucContainer.innerHTML = tableHtml;
             };
 
-            // --- Sistem Önerileri Fonksiyonları ---
             const openSistemOnerileri = () => {
                 clearAllViews();
                 elements.sistemOnerileriModal.style.display = "flex";
                 renderSistemOnerileri();
             };
-
             const closeSistemOnerileriModal = () => {
                 elements.sistemOnerileriModal.style.display = "none";
                 renderAllComponents();
             };
-
             const renderSistemOnerileri = () => {
-                // 1. Genel Durum Analizi (Son 5 deneme)
-                let denemelerSource = [...denemeler].sort((a, b) => new Date(a.tarih) - new Date(b.tarih));
-                const lastFive = denemelerSource.slice(-5);
-                let öneriHtml = `<h3>Deneme Performans Analizi</h3>`;
-
-                if (lastFive.length > 0) {
-                    const latestDeneme = lastFive[lastFive.length - 1];
-                    const latestNet = latestDeneme.detaylar.reduce((sum, item) => sum + Number(item.dogru) - (Number(item.yanlis) / 4), 0);
-                    
-                    let ortalamaNet = 0;
-                    if (lastFive.length > 1) {
-                         ortalamaNet = lastFive.slice(0, -1).reduce((sum, d) => sum + d.detaylar.reduce((s, item) => s + Number(item.dogru) - (Number(item.yanlis) / 4), 0), 0) / (lastFive.length - 1);
-                    } else {
-                        ortalamaNet = latestNet; // Tek deneme varsa ortalama da o olur
-                    }
-                    
-                    let trend;
-                    if (latestNet > ortalamaNet) {
-                        trend = { text: "Yükselişte", color: "var(--success-border)" };
-                    } else if (latestNet < ortalamaNet) {
-                        trend = { text: "Düşüşte", color: "var(--danger-btn-bg)" };
-                    } else {
-                        trend = { text: "Sabit", color: "var(--warning-border)" };
-                    }
-                    
-                    öneriHtml += `
-                        <div class="öneri-kutu" style="background-color: var(--warning-bg); border-left-color: ${trend.color};">
-                            <h4>Son Deneme Durumu (${latestDeneme.ad})</h4>
-                            <p>Son netiniz: <b>${latestNet.toFixed(2)}</b></p>
-                            <p>Önceki denemeler ortalamasına göre net trendiniz: <b><span style="color: ${trend.color};">${trend.text}</span></b></p>
-                        </div>
-                    `;
-                } else {
-                    öneriHtml += `<div class='uyari-mesaji'>Henüz yeterli deneme verisi bulunamadı.</div>`;
+                elements.sistemOnerileriContent.innerHTML = "<h3>Analiz ve Öneriler Oluşturuluyor...</h3>";
+                if (denemeler.length === 0) {
+                    elements.sistemOnerileriContent.innerHTML = `<div class="uyari-mesaji">Öneri oluşturmak için en az bir deneme verisi ekleyin.</div>`;
+                    return;
                 }
-
-                // 2. Konu Tekrarı Önerisi (Çözülmemiş Yanlışlara Göre)
-                öneriHtml += `
-                    <h3 style="margin-top: 2rem;">Konu Tekrarı ve Çözüm Öncelikleri</h3>
-                    <div class="öneri-kutu">
-                `;
                 
-                const unsolvedKonular = {};
-                Object.values(yanlisTakipData).forEach(deneme => {
-                    Object.entries(deneme.dersler).forEach(([ders, yanlislar]) => {
-                        if (ders === "Tarih") return; // İSTENEN DEĞİŞİKLİK: Tarih dersini atla
-
-                        yanlislar.filter(y => !y.cozuldu).forEach(y => {
-                            const key = `${ders}: ${y.konu || 'Konu Belirtilmemiş'}`;
-                            unsolvedKonular[key] = (unsolvedKonular[key] || 0) + 1;
-                        });
+                const tumYanlisKonular = {};
+                let tumYanlisSayisi = 0;
+                let tumDogruSayisi = 0;
+                
+                denemeler.forEach(deneme => {
+                    deneme.detaylar.forEach(detay => {
+                        tumDogruSayisi += Number(detay.dogru);
+                        tumYanlisSayisi += Number(detay.yanlis);
+                        if (detay.yanlislar) {
+                            detay.yanlislar.forEach(yanlis => {
+                                if (yanlis.konu) {
+                                    const konu = yanlis.konu.trim();
+                                    tumYanlisKonular[konu] = (tumYanlisKonular[konu] || 0) + 1;
+                                }
+                            });
+                        }
                     });
                 });
+                
+                const toplamSoru = Object.values(soruSayilari).reduce((sum, val) => sum + val, 0) * denemeler.length;
+                const basariOrani = toplamSoru > 0 ? ((tumDogruSayisi / toplamSoru) * 100).toFixed(2) : 0;
+                const siraliKonular = Object.entries(tumYanlisKonular).sort(([, a], [, b]) => b - a);
 
-                const sortedKonular = Object.entries(unsolvedKonular)
-                    .sort(([, a], [, b]) => b - a);
-
-                if (sortedKonular.length > 0) {
+                let öneriHtml = `
+                    <h3>Genel Performans Analizi</h3>
+                    <table>
+                        <thead><tr><th>Parametre</th><th>Değer</th></tr></thead>
+                        <tbody>
+                            <tr><td>Toplam Deneme Sayısı</td><td>${denemeler.length}</td></tr>
+                            <tr><td>Toplam Doğru Sayısı</td><td>${tumDogruSayisi}</td></tr>
+                            <tr><td>Toplam Yanlış Sayısı</td><td>${tumYanlisSayisi}</td></tr>
+                            <tr><td>Genel Başarı Oranı</td><td>%${basariOrani}</td></tr>
+                        </tbody>
+                    </table>
+                `;
+                öneriHtml += `<div class="öneri-kutu"><h4>Sistem Önerileri</h4>`;
+                if (siraliKonular.length > 0) {
                     öneriHtml += `
-                        <h4>Öncelikli Konular (Çözülmemiş Yanlış Sayısına Göre)</h4>
+                        <p>En çok yanlış yaptığınız konulara odaklanmanız, netlerinizi artırmanız için kritik öneme sahiptir.</p>
                         <ul>
-                            ${sortedKonular.slice(0, 5).map(([konu, sayi]) => `<li><b>${konu}</b> (${sayi} çözülmemiş yanlış): En kısa sürede bu yanlışları çözmeli ve konu tekrarı yapmalısınız.</li>`).join('')}
+                            <li>**Top 3 En Çok Yanlış Yapılan Konular:**
+                                <ul>
+                                    ${siraliKonular.slice(0, 3).map(([konu, sayi]) => `<li><b>${konu}</b> (${sayi} yanlış): Bu konulardaki eksiklerinizi tamamlamak için konu tekrarı ve bol soru çözümü yapın.</li>`).join('')}
+                                </ul>
+                            </li>
                         </ul>
                     `;
                 } else {
-                    öneriHtml += `<p>Takip edilen derslerde (Tarih hariç) çözülmemiş yanlışınız bulunmamaktadır. Harika!</p>`;
+                    öneriHtml += `<p>Henüz yanlış yaptığınız konulara ilişkin yeterli veri bulunamadığından kişiselleştirilmiş bir öneri sunamıyorum. Deneme verisi girmeye devam edin.</p>`;
                 }
                 öneriHtml += `</div>`;
-                
-                // 3. Deneme Çözümü Önerisi (Az Deneme Çözülen Dersler) - Basit bir analiz
-                öneriHtml += `<h3 style="margin-top: 2rem;">Deneme Çözümü Planı</h3>`;
-                öneriHtml += `<div class="öneri-kutu" style="background-color: var(--success-bg); border-left-color: var(--success-border);">`;
-
-                const dersDenemeSayilari = dersler.reduce((acc, ders) => {
-                    acc[ders] = denemeler.filter(d => d.detaylar.some(detay => detay.ders === ders)).length;
-                    return acc;
-                }, {});
-
-                const minDenemeSayisi = Math.min(...Object.values(dersDenemeSayilari));
-                const azDenemeCozulenler = Object.entries(dersDenemeSayilari).filter(([, sayi]) => sayi === minDenemeSayisi);
-
-                if (azDenemeCozulenler.length > 0 && minDenemeSayisi < lastFive.length) {
-                    öneriHtml += `
-                        <h4>Farklı Deneme Çözmeniz Gereken Dersler</h4>
-                        <p>En az deneme (${minDenemeSayisi} adet) çözdüğünüz dersler:</p>
-                        <ul>
-                            ${azDenemeCozulenler.map(([ders]) => `<li><b>${ders}</b></li>`).join('')}
-                        </ul>
-                        <p style="font-style: italic;">Bu derslere odaklanarak deneme çözmeye devam etmeniz, eksiklerinizi daha geniş bir yelpazede görmenizi sağlayacaktır.</p>
-                    `;
-                } else {
-                    öneriHtml += `<p>Tüm derslerde dengeli sayıda deneme çözümü yaptığınız görülüyor.</p>`;
-                }
-                öneriHtml += `</div>`;
-                
                 elements.sistemOnerileriContent.innerHTML = öneriHtml;
             };
 
@@ -2532,9 +2200,9 @@
 
             const closeStopwatch = () => {
                 elements.stopwatchContainer.style.display = "none";
-                if (document.fullscreenElement) {
+                 if (document.fullscreenElement) {
                     document.exitFullscreen();
-                }
+                 }
                 renderAllComponents();
             };
 
@@ -2543,109 +2211,98 @@
                 const hours = Math.floor(totalSeconds / 3600);
                 const minutes = Math.floor((totalSeconds % 3600) / 60);
                 const seconds = totalSeconds % 60;
-                
                 elements.stopwatchDisplay.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
             };
 
             const startStopwatch = () => {
-                if (!isRunning) {
+                if (isRunning) {
+                    isRunning = false;
+                    clearInterval(timer);
+                    elements.startStopBtn.textContent = "Başlat";
+                    elements.startStopBtn.classList.remove("danger");
+                    elements.startStopBtn.classList.add("primary");
+                } else {
                     isRunning = true;
                     startTime = Date.now() - elapsedTime;
-                    stopwatchInterval = setInterval(updateTime, 1000);
+                    timer = setInterval(() => {
+                        elapsedTime = Date.now() - startTime;
+                        updateStopwatchDisplay();
+                    }, 1000);
                     elements.startStopBtn.textContent = "Durdur";
-                    elements.startStopBtn.classList.remove('primary');
-                    elements.startStopBtn.classList.add('danger');
-                } else {
-                    isRunning = false;
-                    clearInterval(stopwatchInterval);
-                    elements.startStopBtn.textContent = "Devam Et";
-                    elements.startStopBtn.classList.remove('danger');
-                    elements.startStopBtn.classList.add('primary');
+                    elements.startStopBtn.classList.remove("primary");
+                    elements.startStopBtn.classList.add("danger");
                 }
             };
-
-            const updateTime = () => {
-                elapsedTime = Date.now() - startTime;
-                updateStopwatchDisplay();
-            };
-
+            
             const resetStopwatch = () => {
-                clearInterval(stopwatchInterval);
+                clearInterval(timer);
                 isRunning = false;
                 elapsedTime = 0;
-                elements.startStopBtn.textContent = "Başlat";
-                elements.startStopBtn.classList.remove('danger');
-                elements.startStopBtn.classList.add('primary');
                 updateStopwatchDisplay();
+                elements.startStopBtn.textContent = "Başlat";
+                elements.startStopBtn.classList.remove("danger");
+                elements.startStopBtn.classList.add("primary");
             };
 
             const saveStopwatchTime = async () => {
                 if (elapsedTime > 0) {
-                    const totalSeconds = Math.floor(elapsedTime / 1000);
-                    const hours = Math.floor(totalSeconds / 3600);
-                    const minutes = Math.floor((totalSeconds % 3600) / 60);
-                    const seconds = totalSeconds % 60;
-                    
-                    const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                    const currentTime = new Date().toISOString();
-
-                    const newTime = { id: Date.now(), time: timeString, date: currentTime };
-                    stopwatchTimes.push(newTime);
+                    const savedTime = {
+                        id: Date.now(),
+                        date: new Date().toLocaleDateString('tr-TR'),
+                        time: elements.stopwatchDisplay.textContent
+                    };
+                    stopwatchTimes.push(savedTime);
+                    stopwatchTimes.sort((a,b) => b.id - a.id);
                     await saveToRemote();
                     renderSavedTimes();
                     resetStopwatch();
-                    alert(`Süre kaydedildi: ${timeString}`);
                 }
-            };
-
-            const deleteSavedTime = async (id) => {
-                stopwatchTimes = stopwatchTimes.filter(t => t.id !== id);
-                await saveToRemote();
-                renderSavedTimes();
             };
 
             const renderSavedTimes = () => {
                 elements.savedTimesList.innerHTML = "";
-                // En yeniyi en üste al
-                const sortedTimes = [...stopwatchTimes].sort((a, b) => new Date(b.date) - new Date(a.date));
-
-                if (sortedTimes.length === 0) {
-                    elements.savedTimesList.innerHTML = "<li>Henüz kaydedilmiş bir süre yok.</li>";
+                if (stopwatchTimes.length === 0) {
+                    elements.savedTimesList.innerHTML = "<li style='text-align: center; color: #888;'>Henüz kaydedilmiş süre yok.</li>";
                     return;
                 }
-
-                sortedTimes.forEach(t => {
+                stopwatchTimes.forEach(item => {
                     const li = document.createElement("li");
-                    const timeText = t.time;
-                    const dateText = new Date(t.date).toLocaleString('tr-TR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-                    
                     li.innerHTML = `
-                        <span>${timeText} <small>(${dateText})</small></span>
-                        <button class="danger" onclick="app.deleteSavedTime(${t.id})">Sil</button>
+                        <span>${item.date} - ${item.time}</span>
+                        <button class="danger" onclick="app.deleteSavedTime(${item.id})">Sil</button>
                     `;
                     elements.savedTimesList.appendChild(li);
                 });
             };
 
+            const deleteSavedTime = async (id) => {
+                if (confirm("Bu süreyi silmek istediğinize emin misiniz?")) {
+                    stopwatchTimes = stopwatchTimes.filter(item => item.id !== id);
+                    await saveToRemote();
+                    renderSavedTimes();
+                }
+            };
+
             const toggleFullscreen = () => {
                 if (!document.fullscreenElement) {
                     elements.stopwatchContainer.requestFullscreen().catch(err => {
-                        alert(`Hata: Tam ekran moduna geçilemedi: ${err.message} (${err.name})`);
+                        alert(`Hata: Tam ekrana geçilemedi: ${err.message}`);
                     });
-                    elements.stopwatchContainer.classList.add('fullscreen');
                 } else {
                     document.exitFullscreen();
                 }
             };
-
+            
             const handleFullscreenChange = () => {
-                if (!document.fullscreenElement) {
-                    elements.stopwatchContainer.classList.remove('fullscreen');
-                }
+                 if (document.fullscreenElement === elements.stopwatchContainer) {
+                    elements.stopwatchContainer.classList.add("focus-mode");
+                    elements.fullscreenButton.innerHTML = "&#x2715;"; // Kapatma simgesi
+                 } else {
+                    elements.stopwatchContainer.classList.remove("focus-mode");
+                    elements.fullscreenButton.innerHTML = "&#x26F6;"; // Tam ekran simgesi
+                 }
             };
-
-
-            // --- Uygulama Başlangıcı ---
+            
             const init = async () => {
                 await loadFromRemote();
                 // Geriye dönük uyumluluk
